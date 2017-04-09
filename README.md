@@ -3,7 +3,15 @@
 
 ## 설치
 
+윈도우즈
 ```sh
+pip install mysqlclient
+```
+
+MAC
+```sh
+brew install mysql
+export PATH=$PATH:/usr/local/mysql/bin
 pip install mysqlclient
 ```
 
