@@ -26,9 +26,10 @@ class RssFeed(Feed):
     #     return item.comment
 
     def item_link(self, item):
-        return reverse('torrent:item', kwargs={'magnet_id': item.id})
+        # return reverse('torrent:item', kwargs={'magnet_id': item.id})
         # return reverse('item', args=[1795])
         # return '/' + str(item.id)
+        return item.url
 
 
 def index(request):
