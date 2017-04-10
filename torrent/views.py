@@ -34,12 +34,31 @@ def rss(request):
     #
     # rss = fg.rss_str(pretty=True)
     # print(rss)
+    # return HttpResponse(rss)
 
-    titles = ''
+    rss_content = '<?xml version="1.0" encoding="UTF-8"?>'+\
+        '<rss version = "2.0">'+\
+        '<channel>'+\
+        '<title>RSS</title>'+ \
+        '<link>http://jace.diskstation.me:9000</link>' +\
+        '<description>RSS</description>'
+
     for magnet in latest_magnet_list:
-        titles += magnet.title
+        rss_content += '<item>'
+        rss_content += '<title>' + magnet.title + '</title>'
+        rss_content += '<link>' + magnet.magnet + '</link>'
+        rss_content += '</item>'
 
-    return HttpResponse(titles)
+    rss_content += '</channel></rss>'
+
+    # titles = ''
+    # for magnet in latest_magnet_list:
+    #     titles += magnet.title
+    #
+    # return HttpResponse(titles)
+
+    return HttpResponse(rss_content)
+
 
 
 def collect_tfreeca():
