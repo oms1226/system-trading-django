@@ -34,7 +34,12 @@ def rss(request):
     #
     # rss = fg.rss_str(pretty=True)
     # print(rss)
-    return HttpResponse('hi')
+
+    titles = ''
+    for magnet in latest_magnet_list:
+        titles += magnet.title
+
+    return HttpResponse(titles)
 
 
 def collect_tfreeca():
