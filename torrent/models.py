@@ -5,7 +5,7 @@ from django.db import models
 
 
 class Magnet(models.Model):
-    url = models.CharField(primary_key=True, max_length=255)
+    url = models.CharField(max_length=255)
     category = models.CharField(max_length=100, null=True)
     title = models.TextField()
     magnet = models.TextField()

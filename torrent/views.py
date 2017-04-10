@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 
 # Create your views here.
 
-
+# https://www.tutorialspoint.com/django/django_rss.htm
 class RssFeed(Feed):
     title = "Dreamreal's comments"
     link = "/drcomments/"
@@ -26,11 +26,18 @@ class RssFeed(Feed):
     #     return item.comment
 
     def item_link(self, item):
-        return item.magnet
+        return reverse('torrent:item', kwargs={'magnet_id': item.id})
+        # return reverse('item', args=[1795])
+        # return '/' + str(item.id)
 
 
 def index(request):
     return render(request, 'torrent/index.html')
+
+
+def item(request, magnet_id):
+    magnet = Magnet.objects.get(id=magnet_id)
+    return HttpResponse(magnet.magnet)
 
 
 def rss(request):
