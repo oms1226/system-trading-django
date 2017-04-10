@@ -24,21 +24,20 @@ class RssFeed(Feed):
 
     # def item_description(self, item):
     #     return item.comment
-
     def item_link(self, item):
-        # return reverse('torrent:item', kwargs={'magnet_id': item.id})
+        return reverse('torrent:item', kwargs={'item_id': item.id})
         # return reverse('item', args=[1795])
         # return '/' + str(item.id)
-        return item.magnet
+        # return item.magnet
 
 
 def index(request):
     return render(request, 'torrent/index.html')
 
 
-def item(request, magnet_id):
-    magnet = Magnet.objects.get(id=magnet_id)
-    return HttpResponseRedirect(magnet.url)
+def item(request, item_id):
+    magnet = Magnet.objects.get(id=item_id)
+    return HttpResponse(magnet.magnet)
 
 
 def rss(request):
