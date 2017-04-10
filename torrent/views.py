@@ -3,7 +3,7 @@ import re
 import urllib.request
 from bs4 import BeautifulSoup
 from .models import Magnet
-from feedgen.feed import FeedGenerator
+# from feedgen.feed import FeedGenerator
 from django.http import HttpResponse
 
 # Create your views here.
@@ -17,24 +17,24 @@ def rss(request):
     latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
 
     # 출처 : https://github.com/lkiesow/python-feedgen
-    fg = FeedGenerator()
-    fg.id('http://lernfunk.de/media/654321')
-    fg.title('RSS')
-    fg.author({'name': 'John Doe', 'email': 'john@example.de'})
-    fg.link(href='http://example.com', rel='alternate')
-    fg.logo('http://ex.com/logo.jpg')
-    fg.subtitle('This is a cool feed!')
-    fg.link(href='http://larskiesow.de/test.atom', rel='self')
-
-    for magnet in latest_magnet_list:
-        fe = fg.add_entry()
-        fe.id(magnet.url)
-        fe.title(magnet.title)
-        fe.link(link={'href': magnet.magnet})
-
-    rss = fg.rss_str(pretty=True)
-    print(rss)
-    return HttpResponse(rss)
+    # fg = FeedGenerator()
+    # fg.id('http://lernfunk.de/media/654321')
+    # fg.title('RSS')
+    # fg.author({'name': 'John Doe', 'email': 'john@example.de'})
+    # fg.link(href='http://example.com', rel='alternate')
+    # fg.logo('http://ex.com/logo.jpg')
+    # fg.subtitle('This is a cool feed!')
+    # fg.link(href='http://larskiesow.de/test.atom', rel='self')
+    #
+    # for magnet in latest_magnet_list:
+    #     fe = fg.add_entry()
+    #     fe.id(magnet.url)
+    #     fe.title(magnet.title)
+    #     fe.link(link={'href': magnet.magnet})
+    #
+    # rss = fg.rss_str(pretty=True)
+    # print(rss)
+    return HttpResponse('hi')
 
 
 def collect_tfreeca():
