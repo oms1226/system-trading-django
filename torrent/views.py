@@ -37,7 +37,7 @@ def index(request):
 
 def item(request, item_id):
     magnet = Magnet.objects.get(id=item_id)
-    response = HttpResponse(content_type='text/plain')
+    response = HttpResponse(content_type='text/plain; charset=utf-8')
     response.write(magnet.magnet)
     return response
 
