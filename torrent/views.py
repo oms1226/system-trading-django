@@ -37,7 +37,11 @@ def index(request):
 
 def item(request, item_id):
     magnet = Magnet.objects.get(id=item_id)
-    return HttpResponse(magnet.magnet, content_type="text/plain")
+    response = HttpResponse(content_type='text/plain')
+    response.write(magnet.magnet)
+    return response
+
+    # return HttpResponse(magnet.magnet, content_type="text/plain")
 
 
 def rss(request):
