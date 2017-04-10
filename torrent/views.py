@@ -1,12 +1,16 @@
 from django.shortcuts import render
 import re
 import urllib.request
+from urllib.parse import quote
 from bs4 import BeautifulSoup
+from django.utils.http import urlencode
+
 from .models import Magnet
 # from feedgen.feed import FeedGenerator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
+from django.utils.html import escape
 
 # Create your views here.
 
@@ -24,11 +28,13 @@ class RssFeed(Feed):
 
     # def item_description(self, item):
     #     return item.comment
+
     def item_link(self, item):
         return reverse('torrent:item', kwargs={'item_id': item.id})
         # return reverse('item', args=[1795])
         # return '/' + str(item.id)
         # return item.magnet
+        # return item.get_absolute_url()
 
 
 def index(request):
@@ -38,6 +44,10 @@ def index(request):
 def item(request, item_id):
     magnet = Magnet.objects.get(id=item_id)
     response = HttpResponse(content_type='text/plain; charset=utf-8')
+    print(escape(magnet.title))
+    # title = urlencode(magnet.title)
+    title = quote(magnet.title)
+    response['Content-Disposition'] = 'attachment; filename=' + title
     response.write(magnet.magnet)
     return response
 
