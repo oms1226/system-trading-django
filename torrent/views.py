@@ -4,7 +4,7 @@ import urllib.request
 from bs4 import BeautifulSoup
 from .models import Magnet
 # from feedgen.feed import FeedGenerator
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 
@@ -37,7 +37,7 @@ def index(request):
 
 def item(request, magnet_id):
     magnet = Magnet.objects.get(id=magnet_id)
-    return HttpResponse(magnet.magnet)
+    return HttpResponseRedirect(magnet.url)
 
 
 def rss(request):
@@ -87,7 +87,6 @@ def rss(request):
     return HttpResponse(rss_content)
 
 
-
 def collect_tfreeca():
     url_home = 'http://www.tfreeca2.com/'
     url_ref_map = {
@@ -126,7 +125,8 @@ def collect_tfreeca():
 
 
 def collect(request, site='all'):
-    result = collect_tfreeca()
+    # result = collect_tfreeca()
+    result = collect_torrenters()
     return render(request, 'torrent/collect.html', {'result': result})
 
 
@@ -136,3 +136,43 @@ def get_bs(url_home, url_ref):
     html = urllib.request.urlopen(req).read()
     bs = BeautifulSoup(html, 'lxml', from_encoding='utf-8')
     return bs
+
+
+def collect_torrenters():
+    url_home = 'http://torrentersg.com/bbs/'
+    url_ref_map = {
+        'tv': 'board.php?bo_table=tr_pbtv'
+        , 'tv': 'board.php?bo_table=tr_ftv'
+        , 'movie': 'board.php?bo_table=tr_kmovie'
+        , 'movie': 'board.php?bo_table=tr_fmovie'
+    }
+
+    result = list()
+
+    for category, url_ref in url_ref_map.items():
+        bs = get_bs(url_home, url_ref)
+        bs_trs = bs.find('table', {'id': 'tbl_board'}).findAll('tr')
+
+        for bs_tr in bs_trs:
+            if 'class' in bs_tr.attrs:
+                tr_class = bs_tr.attrs['class'][0]
+                if tr_class != 'bg0' and tr_class != 'bg1':
+                    continue
+            href = bs_tr.find('a')['href']
+            
+            # 상세 페이지 이동
+            bs_content = get_bs(url_home, href)
+            file_links = bs_content.findAll('li', {'class': 'file_link'})
+            alink = file_links[1].find('a')
+            title = alink['title']
+            href_js = alink['href']
+            m = re.search('javascript:dnload\(\'(.*?)\'', href_js)
+            href = m.group(1)
+            magnet, created = Magnet.objects.get_or_create(title=title, url=url_home + href, category=category)
+            if created:
+                print(title, " added")
+                result.append(magnet)
+            else:
+                print(title, " exist")
+
+    return result
