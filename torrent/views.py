@@ -50,7 +50,7 @@ def item(request, item_id):
     # title = quote(unicode(magnet.title))
     # title = unicode(magnet.title).encode('utf-8')
     # title = magnet.title.decode('utf-8')
-    response['Content-Disposition'] = 'attachment; filename=' + '123'
+    response['Content-Disposition'] = 'attachment; filename=' + '123.torrent'
     response.write(magnet.magnet)
     return response
 
