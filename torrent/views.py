@@ -44,7 +44,7 @@ def index(request):
 def item(request, item_id):
     magnet = Magnet.objects.get(id=item_id)
     response = HttpResponse(content_type='text/plain; charset=utf-8')
-    print(escape(magnet.title))
+    # print(escape(magnet.title))
     title = magnet.title
     # title = urlencode(magnet.title)
     # title = quote(unicode(magnet.title))
