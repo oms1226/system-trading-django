@@ -5,8 +5,28 @@ from bs4 import BeautifulSoup
 from .models import Magnet
 # from feedgen.feed import FeedGenerator
 from django.http import HttpResponse
+from django.contrib.syndication.views import Feed
+from django.core.urlresolvers import reverse
 
 # Create your views here.
+
+
+class RssFeed(Feed):
+    title = "Dreamreal's comments"
+    link = "/drcomments/"
+    description = "Updates on new comments on Dreamreal entry."
+
+    def items(self):
+        return Magnet.objects.order_by('-reg_date')[:100]
+
+    def item_title(self, item):
+        return item.title
+
+    # def item_description(self, item):
+    #     return item.comment
+
+    def item_link(self, item):
+        return item.magnet
 
 
 def index(request):
