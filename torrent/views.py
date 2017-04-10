@@ -29,7 +29,7 @@ class RssFeed(Feed):
         # return reverse('torrent:item', kwargs={'magnet_id': item.id})
         # return reverse('item', args=[1795])
         # return '/' + str(item.id)
-        return item.url
+        return item.magnet
 
 
 def index(request):
@@ -175,5 +175,10 @@ def collect_torrenters():
                 result.append(magnet)
             else:
                 print(title, " exist")
+
+            url = url_home + href
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            html = urllib.request.urlopen(req).read()
+            bs = BeautifulSoup(html, 'lxml', from_encoding='utf-8')
 
     return result
