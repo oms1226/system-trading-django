@@ -1,6 +1,13 @@
 
 # System Trading django
 
+
+```
+magnet:?xt=urn:btih:ADE00BD4FC380206C0B56F0502D879A360337FCE&dn=Your.Pretty.Face.Is.Going.To.Hell.S03E08.720p+HDTV.x264-W4F&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce
+```
+
+
+
 ## 시놀로지에 GCC 설치
 - http://blog.nuwana.com/144
 

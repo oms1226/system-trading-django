@@ -1,10 +1,10 @@
-from __future__ import unicode_literals
 from django.shortcuts import render
 import re
 import urllib.request
 from urllib.parse import quote
 from bs4 import BeautifulSoup
 from django.utils.http import urlencode
+
 from .models import Magnet
 # from feedgen.feed import FeedGenerator
 from django.http import HttpResponse, HttpResponseRedirect
@@ -45,16 +45,60 @@ def item(request, item_id):
     magnet = Magnet.objects.get(id=item_id)
     response = HttpResponse(content_type='text/plain; charset=utf-8')
     print(escape(magnet.title))
-    title = magnet.title
     # title = urlencode(magnet.title)
-    # title = quote(unicode(magnet.title))
-    # title = unicode(magnet.title).encode('utf-8')
-    # title = magnet.title.decode('utf-8')
-    response['Content-Disposition'] = 'attachment; filename=' + '123'
+    title = quote(magnet.title)
+    response['Content-Disposition'] = 'attachment; filename=' + title
     response.write(magnet.magnet)
     return response
 
     # return HttpResponse(magnet.magnet, content_type="text/plain")
+
+
+def rss(request):
+    latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
+
+    # 출처 : https://github.com/lkiesow/python-feedgen
+    # fg = FeedGenerator()
+    # fg.id('http://lernfunk.de/media/654321')
+    # fg.title('RSS')
+    # fg.author({'name': 'John Doe', 'email': 'john@example.de'})
+    # fg.link(href='http://example.com', rel='alternate')
+    # fg.logo('http://ex.com/logo.jpg')
+    # fg.subtitle('This is a cool feed!')
+    # fg.link(href='http://larskiesow.de/test.atom', rel='self')
+    #
+    # for magnet in latest_magnet_list:
+    #     fe = fg.add_entry()
+    #     fe.id(magnet.url)
+    #     fe.title(magnet.title)
+    #     fe.link(link={'href': magnet.magnet})
+    #
+    # rss = fg.rss_str(pretty=True)
+    # print(rss)
+    # return HttpResponse(rss)
+
+    rss_content = '<?xml version="1.0" encoding="UTF-8"?>'+\
+        '<rss version = "2.0">'+\
+        '<channel>'+\
+        '<title>RSS</title>'+ \
+        '<link>http://jace.diskstation.me:9000</link>' +\
+        '<description>RSS</description>'
+
+    for magnet in latest_magnet_list:
+        rss_content += '<item>'
+        rss_content += '<title>' + magnet.title + '</title>'
+        rss_content += '<link>' + magnet.magnet + '</link>'
+        rss_content += '</item>'
+
+    rss_content += '</channel></rss>'
+
+    # titles = ''
+    # for magnet in latest_magnet_list:
+    #     titles += magnet.title
+    #
+    # return HttpResponse(titles)
+
+    return HttpResponse(rss_content)
 
 
 def collect_tfreeca():
@@ -64,7 +108,6 @@ def collect_tfreeca():
     }
 
     result = list()
-    trackers= '&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce'
 
     for category, url_ref in url_ref_map.items():
         bs = get_bs(url_home, url_ref)
@@ -83,7 +126,6 @@ def collect_tfreeca():
             torrent_src = bs_content.find('iframe', {'id': 'external-frame'})['src']
             bs_torrent = get_bs(url_home, torrent_src)
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
-            magnet += '&dn=' + title + trackers
             # return render(request, 'torrent/collect.html', {'result': bs.prettify()})
             magnet, created = Magnet.objects.get_or_create(title=title, magnet=magnet, url=url_home + href,
                                                            category=category)
@@ -97,8 +139,8 @@ def collect_tfreeca():
 
 
 def collect(request, site='all'):
-    result = collect_tfreeca()
-    # result = collect_torrenters()
+    # result = collect_tfreeca()
+    result = collect_torrenters()
     return render(request, 'torrent/collect.html', {'result': result})
 
 
