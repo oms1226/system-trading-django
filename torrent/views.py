@@ -82,6 +82,7 @@ def showrss(request):
         # rss_content += '<link>' + urlenc + '</link>'
         m = re.search('(?<=btih:).*', magnet.magnet)
         info_hash = m.group(0)
+        rss_content += '<guid ispermalink="false">' + info_hash + '</guid>'
         rss_content += '<showrss:info_hash>' + info_hash + '</showrss:info_hash>'
         rss_content += '<showrss:showname>' + magnet.title + '</showrss:showname>'
         # enclosure_url = urllib.request.quote(magnet.magnet + '&dn=' + magnet.title + trackers)
