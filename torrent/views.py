@@ -80,6 +80,9 @@ def showrss(request):
         # urlenc = urllib.request.quote(magnet.magnet)
         rss_content += '<link>' + magnet.magnet + '</link>'
         # rss_content += '<link>' + urlenc + '</link>'
+        m = re.search('(?<=btih:).*', magnet.magnet)
+        info_hash = m.group(0)
+        rss_content += '<showrss:info_hash>' + info_hash + '</showrss:info_hash>'
         rss_content += '<showrss:showname>' + magnet.title + '</showrss:showname>'
         enclosure_url = urllib.request.quote(magnet.magnet + '&dn=' + magnet.title + trackers)
         rss_content += '<enclosure url = "' + enclosure_url + '" length = "0" type = "application/x-bittorrent"></enclosure>'
