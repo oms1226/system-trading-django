@@ -65,6 +65,8 @@ def rss(request):
 def showrss(request):
     latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
 
+    trackers = '&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce'
+
     rss_content = '<?xml version="1.0" encoding="UTF-8"?>'+\
         '<rss xmlns:showrss="http://showrss.info" version = "2.0">'+\
         '<channel>'+\
@@ -79,7 +81,8 @@ def showrss(request):
         # rss_content += '<link>' + magnet.magnet + '</link>'
         # rss_content += '<link>' + urlenc + '</link>'
         rss_content += '<showrss:showname>' + magnet.title + '</showrss:showname>'
-        rss_content += '<enclosure url = "magnet:?xt=urn:btih:2ABCFB2B3904871EE70E2BE47F8C05938B1B9DCF&amp;dn=%EC%B4%88%EC%9D%B8%EA%B0%80%EC%A1%B1+2017.E15.170410.360p-NEXT.mp4&amp;tr=udp://tracker.openbittorrent.com:80&amp;tr=http://megapeer.org:6969/announce&amp;tr=http://mgtracker.org:2710/announce&amp;tr=http://tracker.files.fm:6969/announce&amp;tr=http://tracker.flashtorrents.org:6969/announce&amp;tr=http://tracker.mg64.net:6881/announce&amp;tr=http://tracker.nwps.ws:6969/announce&amp;tr=http://tracker.ohys.net/announce&amp;tr=http://tracker.tfile.me/announce&amp;tr=udp://9.rarbg.com:2710/announce&amp;tr=udp://9.rarbg.me:2710/announce&amp;tr=udp://coppersurfer.tk:6969/announce&amp;tr=udp://tracker.coppersurfer.tk:6969&amp;tr=udp://tracker.leechers-paradise.org:6969&amp;tr=udp://exodus.desync.com:6969/announce&amp;tr=udp://open.coppersurfer.com:1337/announce" length = "0" type = "application/x-bittorrent"></enclosure>'
+        enclosure_url = urllib.request.quote(magnet.magnet + '&dn=' + magnet.title + trackers)
+        rss_content += '<enclosure url = "' + enclosure_url + '" length = "0" type = "application/x-bittorrent"></enclosure>'
         rss_content += '</item>'
 
     rss_content += '</channel></rss>'
@@ -136,7 +139,6 @@ def collect_tfreeca():
             torrent_src = bs_content.find('iframe', {'id': 'external-frame'})['src']
             bs_torrent = get_bs(url_home, torrent_src)
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
-            magnet += '&dn=' + title + trackers
             # return render(request, 'torrent/collect.html', {'result': bs.prettify()})
             magnet, created = Magnet.objects.get_or_create(title=title, magnet=magnet, url=url_home + href,
                                                            category=category)
