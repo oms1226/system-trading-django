@@ -85,11 +85,11 @@ def collect_tfreeca():
             # return render(request, 'torrent/collect.html', {'result': bs.prettify()})
             magnet, created = Magnet.objects.get_or_create(title=title, magnet=magnet, url=url_home + href,
                                                            category=category)
-            if created:
-                print(title, " added")
-                result.append(magnet)
-            else:
-                print(title, " exist")
+            # if created:
+            #     print(title, " added")
+            #     result.append(magnet)
+            # else:
+            #     print(title, " exist")
 
     return result
 
