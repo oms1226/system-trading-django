@@ -78,7 +78,7 @@ def showrss(request):
         rss_content += '<item>'
         rss_content += '<title>' + magnet.title + '</title>'
         # urlenc = urllib.request.quote(magnet.magnet)
-        # rss_content += '<link>' + magnet.magnet + '</link>'
+        rss_content += '<link>' + magnet.magnet + '</link>'
         # rss_content += '<link>' + urlenc + '</link>'
         rss_content += '<showrss:showname>' + magnet.title + '</showrss:showname>'
         enclosure_url = urllib.request.quote(magnet.magnet + '&dn=' + magnet.title + trackers)
