@@ -71,8 +71,8 @@ def showrss(request):
         '<rss xmlns:showrss="http://showrss.info" version = "2.0">'+\
         '<channel>'+\
         '<title>RSS</title>'+ \
+        '<link>http://jace.diskstation.me:9000</link>' + \
         '<description>RSS</description>'
-        # '<link>http://jace.diskstation.me:9000</link>' +\
 
     for magnet in latest_magnet_list:
         rss_content += '<item>'
