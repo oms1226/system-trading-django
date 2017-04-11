@@ -121,22 +121,24 @@ def get_bs(url_home, url_ref=""):
 
 def collect_torrentwiz():
     url_home = 'https://torrentwiz4.com/'
-    url_ref_map = {
-        'movie': 'torrent_movieko',
-        'movie': 'torrent_movielatest',
-        'tv': 'torrent_drama',
-        'tv': 'torrent_ent',
-        'tv': 'torrent_sisa',
-        'music': 'torrent_kpop',
-        'music': 'torrent_pop',
-        'ani': 'torrent_ani',
-        'comic': 'torrent_cartoon',
-    }
+    url_ref_list = [
+        ['movie', 'torrent_movieko'],
+        ['movie', 'torrent_movielatest'],
+        ['tv', 'torrent_drama'],
+        ['tv', 'torrent_ent'],
+        ['tv', 'torrent_sisa'],
+        ['music', 'torrent_kpop'],
+        ['music', 'torrent_pop'],
+        ['ani', 'torrent_ani'],
+        ['comic', 'torrent_cartoon'],
+    ]
 
     result = list()
 
-    for category, url_ref in url_ref_map.items():
-        bs = get_bs(url_home, url_ref)
+    for url_ref in url_ref_list:
+        category = url_ref[0]
+        url = url_ref[1]
+        bs = get_bs(url_home, url)
         bs_trs = bs.find('table', {'class': 'list-pc'}).find('tbody').findAll('tr')
 
         for bs_tr in bs_trs:
@@ -149,14 +151,15 @@ def collect_torrentwiz():
             title = bs_content.find('div', {'class': 'view-wrap'}).find('h1').text
             a_tags = bs_content.findAll('a', {'class': 'view_file_download'})
             for a_tag in a_tags:
-                m = re.search('(magnet:.*)&dn=', a_tag['href'])
+                m = re.search('(magnet:\?xt=urn:btih:.+?)&', a_tag['href'])
                 if m is not None:
                     magnet = m.group(1)
                     break
 
+            print(title)
             obj = save_data(title, magnet, href, category)
             result.append(obj)
-            print(title)
+
 
     return result
 
