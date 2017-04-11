@@ -59,7 +59,7 @@ def collect_tfreeca():
     url_ref_map = {
         'movie': 'board.php?mode=list&b_id=tmovie',
         'drama': 'board.php?mode=list&b_id=tdrama',
-        'variety' : 'board.php?mode=list&b_id=tent',
+        'variety': 'board.php?mode=list&b_id=tent',
         'tv': 'board.php?mode=list&b_id=tv',
         'ani': 'board.php?mode=list&b_id=tani',
         'music': 'board.php?mode=list&b_id=tmusic',
