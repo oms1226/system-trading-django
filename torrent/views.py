@@ -75,6 +75,7 @@ def showrss(request):
         '<description>RSS</description>'
 
     for magnet in latest_magnet_list:
+        magnet.title = 'test_title'
         rss_content += '<item>'
         rss_content += '<title>' + magnet.title + '</title>'
         # urlenc = urllib.request.quote(magnet.magnet)
