@@ -1,7 +1,7 @@
-from __future__ import unicode_literals
 from django.shortcuts import render
 import re
 import urllib.request
+import urllib
 from urllib.parse import quote
 from bs4 import BeautifulSoup
 from django.utils.http import urlencode
@@ -35,6 +35,59 @@ class RssFeed(Feed):
         # return '/' + str(item.id)
         # return item.magnet
         # return item.get_absolute_url()
+
+
+def rss(request):
+    latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
+
+    rss_content = '<?xml version="1.0" encoding="UTF-8"?>'+\
+        '<rss xmlns:atom="http://www.w3.org/2005/Atom" version = "2.0">'+\
+        '<channel>'+\
+        '<title>RSS</title>'+ \
+        '<description>RSS</description>'
+        # '<link>http://jace.diskstation.me:9000</link>' +\
+
+    for magnet in latest_magnet_list:
+        rss_content += '<item>'
+        rss_content += '<title>' + magnet.title + '</title>'
+        urlenc = urllib.request.quote(magnet.magnet)
+        # rss_content += '<link>' + magnet.magnet + '</link>'
+        rss_content += '<link>' + urlenc + '</link>'
+        rss_content += '</item>'
+
+    rss_content += '</channel></rss>'
+    return HttpResponse(rss_content)
+    # response = HttpResponse(content_type='text/plain; charset=utf-8')
+    # response.write(rss_content)
+    # return response
+
+
+def showrss(request):
+    latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
+
+    rss_content = '<?xml version="1.0" encoding="UTF-8"?>'+\
+        '<rss xmlns:showrss="http://showrss.info" version = "2.0">'+\
+        '<channel>'+\
+        '<title>RSS</title>'+ \
+        '<description>RSS</description>'
+        # '<link>http://jace.diskstation.me:9000</link>' +\
+
+    for magnet in latest_magnet_list:
+        rss_content += '<item>'
+        rss_content += '<title>' + magnet.title + '</title>'
+        # urlenc = urllib.request.quote(magnet.magnet)
+        # rss_content += '<link>' + magnet.magnet + '</link>'
+        # rss_content += '<link>' + urlenc + '</link>'
+        rss_content += '<showrss:showname>' + magnet.title + '</showrss:showname>'
+        rss_content += '<enclosure url = "magnet:?xt=urn:btih:2ABCFB2B3904871EE70E2BE47F8C05938B1B9DCF&amp;dn=%EC%B4%88%EC%9D%B8%EA%B0%80%EC%A1%B1+2017.E15.170410.360p-NEXT.mp4&amp;tr=udp://tracker.openbittorrent.com:80&amp;tr=http://megapeer.org:6969/announce&amp;tr=http://mgtracker.org:2710/announce&amp;tr=http://tracker.files.fm:6969/announce&amp;tr=http://tracker.flashtorrents.org:6969/announce&amp;tr=http://tracker.mg64.net:6881/announce&amp;tr=http://tracker.nwps.ws:6969/announce&amp;tr=http://tracker.ohys.net/announce&amp;tr=http://tracker.tfile.me/announce&amp;tr=udp://9.rarbg.com:2710/announce&amp;tr=udp://9.rarbg.me:2710/announce&amp;tr=udp://coppersurfer.tk:6969/announce&amp;tr=udp://tracker.coppersurfer.tk:6969&amp;tr=udp://tracker.leechers-paradise.org:6969&amp;tr=udp://exodus.desync.com:6969/announce&amp;tr=udp://open.coppersurfer.com:1337/announce" length = "0" type = "application/x-bittorrent"></enclosure>'
+        rss_content += '</item>'
+
+    rss_content += '</channel></rss>'
+    return HttpResponse(rss_content)
+    # response = HttpResponse(content_type='text/plain; charset=utf-8')
+    # response.write(rss_content)
+    # return response
+
 
 
 def index(request):
