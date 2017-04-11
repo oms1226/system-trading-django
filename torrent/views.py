@@ -2,6 +2,7 @@ from django.shortcuts import render
 import re
 import urllib.request
 import urllib
+import logging
 from urllib.parse import quote
 from bs4 import BeautifulSoup
 from django.utils.http import urlencode
@@ -14,6 +15,8 @@ from django.utils.html import escape
 
 # Create your views here.
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 def rss(request):
     latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
@@ -85,11 +88,12 @@ def collect_tfreeca():
             # return render(request, 'torrent/collect.html', {'result': bs.prettify()})
             magnet, created = Magnet.objects.get_or_create(title=title, magnet=magnet, url=url_home + href,
                                                            category=category)
+            result.append(magnet)
+
             # if created:
-            #     print(title, " added")
-            #     result.append(magnet)
+            #     logging.debug(title, " added")
             # else:
-            #     print(title, " exist")
+            #     logging.debug(title, " exist")
 
     return result
 
@@ -103,8 +107,12 @@ def collect(request, site='all'):
 def get_bs(url_home, url_ref):
     url = url_home + url_ref
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    html = urllib.request.urlopen(req).read()
-    bs = BeautifulSoup(html, 'html.parser', from_encoding='utf-8')
+    try:
+        html = urllib.request.urlopen(req, timeout=10).read()
+        bs = BeautifulSoup(html, 'html.parser', from_encoding='utf-8')
+    except:
+        logger.error('Something went wrong!' + url)
+
     return bs
 
 
