@@ -103,7 +103,7 @@ def collect_tfreeca():
 
 
 @csrf_exempt
-def collect(request, site='all'):
+def collect(request):
     result = collect_torrentwiz()
     # result = collect_tfreeca()
 
@@ -133,6 +133,8 @@ def collect_torrentwiz():
         ['music', 'torrent_pop'],
         ['ani', 'torrent_ani'],
         ['comic', 'torrent_cartoon'],
+        ['game', 'torrent_game'],
+        ['util', 'torrent_util'],
     ]
 
     result = list()
