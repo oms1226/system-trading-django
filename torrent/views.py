@@ -67,11 +67,12 @@ def showrss(request):
 
     trackers = '&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce'
 
-    rss_content = '<?xml version="1.0" encoding="UTF-8"?>'+\
-        '<rss xmlns:showrss="http://showrss.info" version = "2.0">'+\
-        '<channel>'+\
-        '<title>RSS</title>'+ \
+    rss_content = '<?xml version="1.0" encoding="UTF-8"?>' +\
+        '<rss xmlns:showrss="http://showrss.info" version = "2.0">' +\
+        '<channel>' +\
+        '<title>RSS</title>' +\
         '<link>http://jace.diskstation.me:9000</link>' + \
+        '<ttl>30</ttl>' + \
         '<description>RSS</description>'
 
     for magnet in latest_magnet_list:
@@ -86,7 +87,6 @@ def showrss(request):
         rss_content += '<guid ispermalink="false">' + info_hash + '</guid>'
         rss_content += '<showrss:info_hash>' + info_hash + '</showrss:info_hash>'
         rss_content += '<showrss:showname>' + magnet.title + '</showrss:showname>'
-        # enclosure_url = urllib.request.quote(magnet.magnet + '&dn=' + magnet.title + trackers)
         enclosure_url = magnet.magnet + '&dn=' + magnet.title + trackers
         rss_content += '<enclosure url = "' + enclosure_url + '" length = "0" type = "application/x-bittorrent"></enclosure>'
         rss_content += '</item>'
@@ -97,6 +97,7 @@ def showrss(request):
     # response.write(rss_content)
     # return response
 
+# enclosure_url = urllib.request.quote(magnet.magnet + '&dn=' + magnet.title + trackers)
 
 
 def index(request):
