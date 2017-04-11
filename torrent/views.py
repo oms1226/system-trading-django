@@ -103,7 +103,7 @@ def collect_tfreeca():
 
 def collect(request, site='all'):
     result = collect_torrentwiz()
-    result = collect_tfreeca()
+    # result = collect_tfreeca()
 
     return render(request, 'torrent/collect.html', {'result': result})
 
@@ -147,12 +147,15 @@ def collect_torrentwiz():
             # 상세 페이지 이동
             bs_content = get_bs(href)
             title = bs_content.find('div', {'class': 'view-wrap'}).find('h1').text
-            magnet = bs_content.find('a', {'class': 'view_file_download'})['href']
+            a_tags = bs_content.findAll('a', {'class': 'view_file_download'})
+            for a_tag in a_tags:
+                m = re.search('(magnet:.*)&dn=', a_tag['href'])
+                if m is not None:
+                    magnet = m.group(1)
+                    break
 
             obj = save_data(title, magnet, href, category)
-
             result.append(obj)
-
             print(title)
 
     return result
