@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 from django.utils.html import escape
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -101,6 +102,7 @@ def collect_tfreeca():
     return result
 
 
+@csrf_exempt
 def collect(request, site='all'):
     result = collect_torrentwiz()
     # result = collect_tfreeca()
