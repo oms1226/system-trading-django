@@ -92,8 +92,10 @@ def showrss(request):
         rss_content += '</item>'
 
     rss_content += '</channel></rss>'
-    rss_contetn = rss_content.replace('&', '&amp;')
+    rss_content = rss_content.replace('&', '&amp;')
+
     return HttpResponse(rss_content)
+
     # response = HttpResponse(content_type='text/plain; charset=utf-8')
     # response.write(rss_content)
     # return response
