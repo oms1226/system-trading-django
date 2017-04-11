@@ -156,7 +156,7 @@ def collect_torrentwiz():
                     magnet = m.group(1)
                     break
 
-            print(title)
+            # print(title)
             obj = save_data(title, magnet, href, category)
             result.append(obj)
 
