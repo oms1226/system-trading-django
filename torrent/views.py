@@ -14,55 +14,8 @@ from django.utils.html import escape
 
 # Create your views here.
 
-# https://www.tutorialspoint.com/django/django_rss.htm
-class RssFeed(Feed):
-    title = "Dreamreal's comments"
-    link = "/drcomments/"
-    description = "Updates on new comments on Dreamreal entry."
-
-    def items(self):
-        return Magnet.objects.order_by('-reg_date')[:100]
-
-    def item_title(self, item):
-        return item.title
-
-    # def item_description(self, item):
-    #     return item.comment
-
-    def item_link(self, item):
-        return reverse('torrent:item', kwargs={'item_id': item.id})
-        # return reverse('item', args=[1795])
-        # return '/' + str(item.id)
-        # return item.magnet
-        # return item.get_absolute_url()
-
 
 def rss(request):
-    latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
-
-    rss_content = '<?xml version="1.0" encoding="UTF-8"?>'+\
-        '<rss xmlns:atom="http://www.w3.org/2005/Atom" version = "2.0">'+\
-        '<channel>'+\
-        '<title>RSS</title>'+ \
-        '<description>RSS</description>'
-        # '<link>http://jace.diskstation.me:9000</link>' +\
-
-    for magnet in latest_magnet_list:
-        rss_content += '<item>'
-        rss_content += '<title>' + magnet.title + '</title>'
-        urlenc = urllib.request.quote(magnet.magnet)
-        # rss_content += '<link>' + magnet.magnet + '</link>'
-        rss_content += '<link>' + urlenc + '</link>'
-        rss_content += '</item>'
-
-    rss_content += '</channel></rss>'
-    return HttpResponse(rss_content)
-    # response = HttpResponse(content_type='text/plain; charset=utf-8')
-    # response.write(rss_content)
-    # return response
-
-
-def showrss(request):
     latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
 
     trackers = '&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce'
@@ -78,9 +31,7 @@ def showrss(request):
     for magnet in latest_magnet_list:
         rss_content += '<item>'
         rss_content += '<title>' + magnet.title + '</title>'
-        # urlenc = urllib.request.quote(magnet.magnet)
         rss_content += '<link>' + magnet.magnet + '</link>'
-        # rss_content += '<link>' + urlenc + '</link>'
         m = re.search('(?<=btih:).*', magnet.magnet)
         info_hash = m.group(0)
         rss_content += '<guid ispermalink="false">' + info_hash + '</guid>'
@@ -95,31 +46,9 @@ def showrss(request):
 
     return HttpResponse(rss_content)
 
-    # response = HttpResponse(content_type='text/plain; charset=utf-8')
-    # response.write(rss_content)
-    # return response
-
-# enclosure_url = urllib.request.quote(magnet.magnet + '&dn=' + magnet.title + trackers)
-
 
 def index(request):
     return render(request, 'torrent/index.html')
-
-
-def item(request, item_id):
-    magnet = Magnet.objects.get(id=item_id)
-    response = HttpResponse(content_type='text/plain; charset=utf-8')
-    # print(escape(magnet.title))
-    title = magnet.title
-    # title = urlencode(magnet.title)
-    # title = quote(unicode(magnet.title))
-    # title = unicode(magnet.title).encode('utf-8')
-    # title = magnet.title.decode('utf-8')
-    response['Content-Disposition'] = 'attachment; filename=' + '123.torrent'
-    response.write(magnet.magnet)
-    return response
-
-    # return HttpResponse(magnet.magnet, content_type="text/plain")
 
 
 def collect_tfreeca():
@@ -129,7 +58,6 @@ def collect_tfreeca():
     }
 
     result = list()
-    trackers= '&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce'
 
     for category, url_ref in url_ref_map.items():
         bs = get_bs(url_home, url_ref)
