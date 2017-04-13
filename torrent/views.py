@@ -21,12 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 def rss(request):
-    latest_magnet_list = Magnet.objects.order_by('-reg_date')[:1000]
+    latest_magnet_list = Magnet.objects.order_by('-reg_date')[:100]
 
     trackers = '&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce'
 
     rss_content = '<?xml version="1.0" encoding="UTF-8"?>' +\
-        '<rss xmlns:showrss="http://showrss.info" version = "2.0">' +\
+        '<rss xmlns:showrss="http://showrss.info" version="2.0">' +\
         '<channel>' +\
         '<title>RSS</title>' +\
         '<link>http://jace.diskstation.me:9000</link>' + \
@@ -81,14 +81,10 @@ def collect_tfreeca():
                     continue
             href = bs_tr.find("a", {"class": re.compile(r'title')})['href']
             bs_content = get_bs(url_home, href)
-            # 제목찾기
             title = bs_content.find('td', {'class': 'view_t2'})['title']
-            # 마그넷 찾기
             torrent_src = bs_content.find('iframe', {'id': 'external-frame'})['src']
             bs_torrent = get_bs(url_home, torrent_src)
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
-            # return render(request, 'torrent/collect.html', {'result': bs.prettify()})
-            # magnet, created = Magnet.objects.get_or_create(title=title, magnet=magnet, url=url_home + href, category = category)
 
             obj = save_data(title, magnet, href, category)
 
@@ -132,6 +128,7 @@ def collect_torrentwiz():
         ['music', 'torrent_kpop'],
         ['music', 'torrent_pop'],
         ['ani', 'torrent_ani'],
+        ['ani', 'torrent_aniend'],
         ['comic', 'torrent_cartoon'],
         ['game', 'torrent_game'],
         ['util', 'torrent_util'],
@@ -163,7 +160,6 @@ def collect_torrentwiz():
             # print(title)
             obj = save_data(title, magnet, href, category)
             result.append(obj)
-
 
     return result
 
