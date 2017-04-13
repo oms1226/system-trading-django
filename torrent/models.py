@@ -1,4 +1,4 @@
-
+import datetime
 from django.db import models
 
 # Create your models here.
@@ -9,7 +9,8 @@ class Magnet(models.Model):
     category = models.CharField(max_length=100, db_index=True)
     title = models.TextField()
     magnet = models.CharField(max_length=100, db_index=True)
-    reg_date = models.DateTimeField(db_index=True, auto_now_add=True)
+    # reg_date = models.DateTimeField(db_index=True, auto_now_add=True)
+    reg_date = models.DateTimeField(db_index=True, default=datetime.datetime.now())
 
     def get_absolute_url(self):
         return self.magnet
