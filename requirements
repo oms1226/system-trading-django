@@ -1,4 +1,5 @@
 django
 mysqlclient
-BeautifulSoup
+BeautifulSoup4
 python-firebase
+twisted
