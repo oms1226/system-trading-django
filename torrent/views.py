@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def rss(request):
-    latest_magnet_list = Magnet.objects.order_by('-reg_date')[:200]
+    latest_magnet_list = Magnet.objects.order_by('-reg_date')[:1000]
 
     trackers = '&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce'
 
@@ -120,11 +120,11 @@ def get_bs(url_home, url_ref=""):
 def collect_torrentwiz():
     url_home = 'https://torrentwiz4.com/'
     url_ref_list = [
-        ['movie', 'torrent_movieko'],
-        ['movie', 'torrent_movielatest'],
-        ['tv', 'torrent_drama'],
         ['tv', 'torrent_ent'],
         ['tv', 'torrent_sisa'],
+        ['tv', 'torrent_drama'],
+        ['movie', 'torrent_movieko'],
+        ['movie', 'torrent_movielatest'],
         ['music', 'torrent_kpop'],
         ['music', 'torrent_pop'],
         ['ani', 'torrent_ani'],
