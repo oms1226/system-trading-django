@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^polls/', include('polls.urls')),
     url(r'^torrent/', include('torrent.urls')),
+    url(r'^shopping/', include('shopping.urls')),
     url(r'^$', lambda r: HttpResponseRedirect('torrent/rss/')),
 ]
