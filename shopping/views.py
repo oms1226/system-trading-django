@@ -4,6 +4,8 @@ import urllib.request
 import socket
 import re
 from datetime import datetime
+from firebase import firebase as fb
+from django.conf import settings
 # Create your views here.
 
 
@@ -67,6 +69,9 @@ def collect_korea():
 
 def save_data(title, url, img_src, date, hit):
     # TODO: firebase에 저장한다.
+    authentication = fb.Authentication(settings.FIREBASE_KEY)
+    firebase = fb.FirebaseApplication('https://your_storage.firebaseio.com', authentication=authentication)
+
     pass
 
 

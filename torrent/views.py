@@ -30,7 +30,7 @@ def rss(request):
         '<rss xmlns:showrss="http://showrss.info" version="2.0">' +\
         '<channel>' +\
         '<title>RSS</title>' +\
-        '<link>http://jace.diskstation.me:9000</link>' + \
+        '<link>http://attr.cf</link>' + \
         '<ttl>30</ttl>' + \
         '<description>RSS</description>'
 
