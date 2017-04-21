@@ -3,9 +3,11 @@ mysqlclient
 BeautifulSoup4
 twisted
 service_identity
+lxml
 pytz
 requests
 firebase_admin
 python-firebase
-lxml
+pyrebase
 pandas
+pandas_datareader
