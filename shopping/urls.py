@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^korea/$', views.korea, name='korea'),
     url(r'^overseas/$', views.overseas, name='overseas'),
     url(r'^collect/$', views.collect, name='collect'),
+    url(r'^remove/$', views.remove, name='remove'),
 ]

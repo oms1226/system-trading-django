@@ -5,4 +5,7 @@ twisted
 service_identity
 pytz
 requests
+firebase_admin
 python-firebase
+lxml
+pandas

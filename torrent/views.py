@@ -104,7 +104,6 @@ def collect_tfreeca():
 def collect(request):
     result = collect_torrentwiz()
     # result = collect_tfreeca()
-
     return render(request, 'torrent/collect.html', {'result': result})
 
 

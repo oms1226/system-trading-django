@@ -172,3 +172,5 @@ db.sqlite3
 
 # ignore settings
 settings.py
+*accountkey.json
+__pychche__
