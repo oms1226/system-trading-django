@@ -1,0 +1,3 @@
+[submodule "system-trading-django.wiki"]
+	path = system-trading-django.wiki
+	url = https://github.com/jacegem/system-trading-django.wiki.git
