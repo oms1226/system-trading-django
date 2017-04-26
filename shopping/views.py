@@ -4,12 +4,8 @@ import urllib.request
 import socket
 import re
 from datetime import datetime
-import pyrebase
+from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-import firebase_admin
-from firebase_admin import credentials, auth
-from firebase import firebase as fb
-import os
 
 
 # Create your views here.
@@ -38,6 +34,7 @@ def remove(request):
     pass
 
 
+@csrf_exempt
 def collect(request):
     """ 모든 정보 수집"""
     result_list = []
