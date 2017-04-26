@@ -30,21 +30,91 @@ def overseas(request):
     pass
 
 
-def collect(request):
-    # TODO: 모든 정보 수집
-    result_list = []
-    # result_list.extend(collect_clien('http://m.clien.net/cs3/board?bo_table=jirum', 'korea'))
-    #result_list.extend(collect_ppomppu("http://m.ppomppu.co.kr/new/bbs_list.php?id=ppomppu", 'korea'))
-    result_list.extend(collect_ppomppu("http://m.ppomppu.co.kr/new/bbs_list.php?id=ppomppu4", 'overseas'))
-    # collect_overseas()
-    return render(request, 'torrent/collect.html', {'result': result_list})
-
-
 def remove(request):
+    """ 전체 내용을 삭제합니다. """
     db = settings.FIREBASE_BUY_CHEAP.database()
     db.child('buy-cheap').child('shop-korea').remove()
     db.child('buy-cheap').child('shop-overseas').remove()
     pass
+
+
+def collect(request):
+    """ 모든 정보 수집"""
+    result_list = []
+    result_list.extend(collect_clien('http://m.clien.net/cs3/board?bo_table=jirum', 'korea'))
+    result_list.extend(collect_ppomppu("http://m.ppomppu.co.kr/new/bbs_list.php?id=ppomppu", 'korea'))
+    result_list.extend(collect_ppomppu("http://m.ppomppu.co.kr/new/bbs_list.php?id=ppomppu4", 'overseas'))
+    result_list.extend(collect_dealbada("http://www.dealbada.com/bbs/board.php?bo_table=deal_domestic", 'korea'))
+    result_list.extend(collect_dealbada("http://www.dealbada.com/bbs/board.php?bo_table=deal_oversea", 'overseas'))
+    result_list.extend(collect_ddanzi("http://www.ddanzi.com/pumpin", 'korea'))
+    result_list.extend(collect_ddanzi("http://www.ddanzi.com/pumpout", 'overseas'))
+
+    # collect_overseas()
+    return render(request, 'torrent/collect.html', {'result': result_list})
+
+
+def collect_ddanzi(url, target="korea"):
+    result_list = []
+    bs = get_bs(url)
+    trs = bs.find('div', {'class': 'board_list'}).find('tbody').findAll('tr')
+    for tr in trs:
+        if tr.has_attr("class") and 'notice' in tr['class']:
+            continue
+        img_src = tr.find('td', {'class': 'thumbnail'}).find('img')['src']
+        a_tag = tr.find('td', {'class': 'title'}).find('a')
+        url = a_tag['href']
+        title = a_tag.text.strip()
+        price = tr.find('div', {'class': 'price'}).text
+
+        content = get_bs(url)
+        div = content.find('div', {'class': 'read_header'})
+
+        date = div.find('p', {'class': 'time'}).text.strip()
+        read_str = div.find('span', {'class': 'read'}).text
+        m = re.match(r'.+:(\d+)', read_str)
+        read = m.group(1)
+        like = div.find('span', {'class':'vote'}).find('em').text
+
+        result = save_data(target, title, url, img_src, date, read, like, price=price)
+        result_list.append(result)
+
+    return result_list
+
+
+def collect_dealbada(url, target="korea"):
+    result_list = []
+    bs = get_bs(url)
+    trs = bs.find('table', {'class': 'hoverTable'}).find('tbody').findAll('tr')
+    for tr in trs:
+        if 'bo_notice' in tr['class']:
+            continue
+        img_src = tr.find('td', {'class': 'td_img'}).find('img')['src']
+        a_tag = tr.find('td', {'class': 'td_subject'}).find('a')
+        url = a_tag['href']
+        title = a_tag.text.strip()
+        sold_out = False
+        if a_tag.find('img') and a_tag.find('img')['alt'] is '종료':
+            sold_out = True
+        # read = tr.find('td', {'class': 'td_num'}).text.strip()
+        # like = tr.find('td', {'class': 'td_num_g'}).find('span').text
+
+        content = get_bs(url)
+        section = content.find('section', {'id': 'bo_v_info'})
+        if section is None:
+            continue
+        spans = section.findAll('span')
+        if len(spans) == 0:
+            continue
+
+        date = spans[7].text[:16]
+        read = spans[9].text
+        like = spans[12].text
+        reply = spans[18].text
+
+        result = save_data(target, title, url, img_src, date, read, like, reply, sold_out)
+        result_list.append(result)
+
+    return result_list
 
 
 def collect_ppomppu(url, target="korea"):
@@ -124,7 +194,7 @@ def key_from_url(url):
     return url
 
 
-def save_data(target, title, url, img_src, date, read=0, like=0, reply=0):
+def save_data(target, title, url, img_src, date, read=0, like=0, reply=0, sold_out=False, price=0):
     db = settings.FIREBASE_BUY_CHEAP.database()
     data = {
         "title": title,
@@ -133,7 +203,9 @@ def save_data(target, title, url, img_src, date, read=0, like=0, reply=0):
         "date": str(date),
         "read": read,
         "like": like,
-        "reply": reply
+        "reply": reply,
+        'sold_out': sold_out,
+        'price': price
     }
     if target is "korea":
         save_path = "shop-korea"
