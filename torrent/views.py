@@ -107,6 +107,8 @@ def collect_backgound():
         '티프리카': collect_tfreeca,
     }
 
+    settings.SLACK.chat.post_message(channel, '### torrent_gathering START ###')
+
     for name, func in torrents.items():
         result = []
         rst = ''
@@ -123,7 +125,7 @@ def collect_backgound():
                 rst = '0건'
             settings.SLACK.chat.post_message(channel, name + '에서 ' + rst + ' 추가됨')
 
-    settings.SLACK.chat.post_message(channel, 'torrent 수집 종료')
+    settings.SLACK.chat.post_message(channel, '### torrent_gathering END ###')
 
 
 collect_threading = None
