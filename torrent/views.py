@@ -4,17 +4,12 @@ import urllib.request
 import logging
 import socket
 import urllib.parse
-from urllib.parse import quote
 from bs4 import BeautifulSoup
-from django.utils.http import urlencode
 from .models import Magnet
-# from feedgen.feed import FeedGenerator
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.syndication.views import Feed
-from django.core.urlresolvers import reverse
-from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
-
+from django.conf import settings
+import threading
 # Create your views here.
 
 # Get an instance of a logger
@@ -60,20 +55,25 @@ def index(request):
 
 def collect_tfreeca():
     url_home = 'http://www.tfreeca2.com/'
-    url_ref_map = {
-        'tv': 'board.php?mode=list&b_id=tdrama',
-        'tv': 'board.php?mode=list&b_id=tent',
-        'tv': 'board.php?mode=list&b_id=tv',
-        'movie': 'board.php?mode=list&b_id=tmovie',
-        'ani': 'board.php?mode=list&b_id=tani',
-        'music': 'board.php?mode=list&b_id=tmusic',
-        'util': 'board.php?mode=list&b_id=util',
-    }
+    url_ref_list = [
+        ['tv', 'board.php?mode=list&b_id=tent'],
+        ['tv', 'board.php?mode=list&b_id=tdrama'],
+        ['tv', 'board.php?mode=list&b_id=tv'],
+        ['movie', 'board.php?mode=list&b_id=tmovie'],
+        ['ani', 'board.php?mode=list&b_id=tani'],
+        ['music', 'board.php?mode=list&b_id=tmusic'],
+        ['util', 'board.php?mode=list&b_id=util'],
+    ]
 
     result = list()
 
-    for category, url_ref in url_ref_map.items():
-        bs = get_bs(url_home, url_ref)
+    for url_ref in url_ref_list:
+        category = url_ref[0]
+        url = url_ref[1]
+
+        print('처리중', category, url_ref);
+
+        bs = get_bs(url_home, url)
         bs_trs = bs.find('table', {'class': 'b_list'}).findAll('tr')
 
         for bs_tr in bs_trs:
@@ -88,6 +88,8 @@ def collect_tfreeca():
             bs_torrent = get_bs(url_home, torrent_src)
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
 
+            print("처리중 → ", title)
+
             obj = save_data(title, magnet, url_home + href, category)
 
             result.append(obj)
@@ -100,21 +102,41 @@ def collect_tfreeca():
     return result
 
 
-@csrf_exempt
-def collect(request):
-    result = []
 
+def collect_backgound():
+    channel = '#torrent_rss'
+
+    result = []
     try:
         result = collect_torrentwiz()
     except:
-        pass
+        settings.SLACK.chat.post_message(channel, '토렌트위즈 실패')
+    else:
+        settings.SLACK.chat.post_message(channel, '토렌트위즈 성공')
 
     try:
         result = collect_tfreeca()
     except:
-        pass
+        settings.SLACK.chat.post_message(channel, '티프리카 실패')
+    else:
+        settings.SLACK.chat.post_message(channel, '티프리카 성공')
 
-    return render(request, 'torrent/collect.html', {'result': result})
+    settings.SLACK.chat.post_message(channel, 'torrent 수집 종료')
+
+
+collect_threading = None
+
+@csrf_exempt
+def collect(request):
+    global collect_threading
+
+    if collect_threading and collect_threading.isAlive():
+        return HttpResponse("collect 요청이 처리중입니다.", content_type="charset=utf-8")
+    else:
+        collect_threading = threading.Thread(target=collect_backgound, args=(), kwargs={})
+        collect_threading.setDaemon(True)
+        collect_threading.start()
+    return HttpResponse("collect 요청되었습니다.", content_type="charset=utf-8")
 
 
 def get_bs(url_home, url_ref=""):

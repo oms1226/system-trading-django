@@ -11,3 +11,4 @@ python-firebase
 pyrebase
 pandas
 pandas_datareader
+slacker
