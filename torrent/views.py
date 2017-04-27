@@ -91,9 +91,9 @@ def collect_tfreeca():
             print("처리중 → ", title)
 
             saved, obj = save_data(title, magnet, url_home + href, category)
-            if saved is None:
-                break
-            result.append(obj)
+            if saved is not None:
+                result.append(obj)
+
     return result
 
 
@@ -193,9 +193,8 @@ def collect_torrentwiz():
 
             # print(title)
             saved, obj = save_data(title, magnet, href, category)
-            if saved is None:
-                break
-            result.append(obj)
+            if saved is not None:
+                result.append(obj)
     return result
 
 
