@@ -98,7 +98,7 @@ def collect_tfreeca():
 
 
 def collect_backgound():
-    channel = '#torrent_rss'
+    channel = '#bot_torrent'
 
     # 이름, 함수
     torrents = {
