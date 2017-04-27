@@ -54,7 +54,7 @@ def index(request):
 
 
 def collect_tfreeca():
-    url_home = 'http://www.tfreeca2.com/'
+    url_home = 'http://www.tfreeca22.com/'
     url_ref_list = [
         ['tv', 'board.php?mode=list&b_id=tent'],
         ['tv', 'board.php?mode=list&b_id=tdrama'],
@@ -90,36 +90,37 @@ def collect_tfreeca():
 
             print("처리중 → ", title)
 
-            obj = save_data(title, magnet, url_home + href, category)
-
+            saved, obj = save_data(title, magnet, url_home + href, category)
+            if saved is None:
+                break
             result.append(obj)
-
-            # if created:
-            #     logging.debug(title, " added")
-            # else:
-            #     logging.debug(title, " exist")
-
     return result
-
 
 
 def collect_backgound():
     channel = '#torrent_rss'
 
-    result = []
-    try:
-        result = collect_torrentwiz()
-    except:
-        settings.SLACK.chat.post_message(channel, '토렌트위즈 실패')
-    else:
-        settings.SLACK.chat.post_message(channel, '토렌트위즈 성공')
+    # 이름, 함수
+    torrents = {
+        '토렌트위즈': collect_torrentwiz,
+        '티프리카': collect_tfreeca,
+    }
 
-    try:
-        result = collect_tfreeca()
-    except:
-        settings.SLACK.chat.post_message(channel, '티프리카 실패')
-    else:
-        settings.SLACK.chat.post_message(channel, '티프리카 성공')
+    for name, func in torrents.items():
+        result = []
+        rst = ''
+
+        try:
+            result = func()
+        except:
+            settings.SLACK.chat.post_message(channel, name + ' 실패')
+        else:
+            if len(result) > 0:
+                for obj in result:
+                    rst += obj.values("title") + '\n'
+            else:
+                rst = '0건'
+            settings.SLACK.chat.post_message(channel, name + '에서 ' + rst + ' 추가됨')
 
     settings.SLACK.chat.post_message(channel, 'torrent 수집 종료')
 
@@ -191,17 +192,22 @@ def collect_torrentwiz():
                     break
 
             # print(title)
-            obj = save_data(title, magnet, href, category)
+            saved, obj = save_data(title, magnet, href, category)
+            if saved is None:
+                break
             result.append(obj)
-
     return result
 
 
 def save_data(title, magnet, url, category):
+    saved = None
+
     try:
         obj = Magnet.objects.get(magnet=magnet)
     except Magnet.DoesNotExist:
         obj = Magnet(title=title, magnet=magnet, url=url, category=category)
         obj.save()
+        saved = True
 
-    return obj
+    return saved, obj
+
