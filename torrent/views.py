@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def rss(request):
-    latest_magnet_list = Magnet.objects.order_by('-id')[:1000]
+    latest_magnet_list = Magnet.objects.order_by('-id')[:500]
 
     trackers = '&tr=udp://tracker.openbittorrent.com:80&tr=http://megapeer.org:6969/announce&tr=http://mgtracker.org:2710/announce&tr=http://tracker.files.fm:6969/announce&tr=http://tracker.flashtorrents.org:6969/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker.nwps.ws:6969/announce&tr=http://tracker.ohys.net/announce&tr=http://tracker.tfile.me/announce&tr=udp://9.rarbg.com:2710/announce&tr=udp://9.rarbg.me:2710/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://exodus.desync.com:6969/announce&tr=udp://open.coppersurfer.com:1337/announce'
 
@@ -35,7 +35,7 @@ def rss(request):
         '<description>RSS</description>'
 
     for magnet in latest_magnet_list:
-        magnet.title = re.sub(r'"', r"", magnet.title)
+        magnet.title = re.sub(r'["<>]', r"", magnet.title)
         rss_content += '<item>'
         rss_content += '<title>' + magnet.title + '</title>'
         rss_content += '<link>' + magnet.magnet + '</link>'
@@ -61,10 +61,10 @@ def index(request):
 def collect_tfreeca():
     url_home = 'http://www.tfreeca2.com/'
     url_ref_map = {
-        'movie': 'board.php?mode=list&b_id=tmovie',
         'tv': 'board.php?mode=list&b_id=tdrama',
         'tv': 'board.php?mode=list&b_id=tent',
         'tv': 'board.php?mode=list&b_id=tv',
+        'movie': 'board.php?mode=list&b_id=tmovie',
         'ani': 'board.php?mode=list&b_id=tani',
         'music': 'board.php?mode=list&b_id=tmusic',
         'util': 'board.php?mode=list&b_id=util',
@@ -88,7 +88,7 @@ def collect_tfreeca():
             bs_torrent = get_bs(url_home, torrent_src)
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
 
-            obj = save_data(title, magnet, href, category)
+            obj = save_data(title, magnet, url_home + href, category)
 
             result.append(obj)
 
@@ -102,8 +102,18 @@ def collect_tfreeca():
 
 @csrf_exempt
 def collect(request):
-    result = collect_torrentwiz()
-    # result = collect_tfreeca()
+    result = []
+
+    try:
+        result = collect_torrentwiz()
+    except:
+        pass
+
+    try:
+        result = collect_tfreeca()
+    except:
+        pass
+
     return render(request, 'torrent/collect.html', {'result': result})
 
 
