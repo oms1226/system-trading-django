@@ -118,7 +118,7 @@ def collect_backgound():
         else:
             if len(result) > 0:
                 for obj in result:
-                    rst += obj.values("title") + '\n'
+                    rst += obj.title + '\n'
             else:
                 rst = '0건'
             settings.SLACK.chat.post_message(channel, name + '에서 ' + rst + ' 추가됨')
