@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import threading
+from django.core.exceptions import MultipleObjectsReturned
 # Create your views here.
 
 # Get an instance of a logger
@@ -97,9 +98,8 @@ def collect_tfreeca():
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
 
             saved, obj = save_data(title, magnet, url_home + href, category)
-            if saved is None:
-                break
-            result.append(obj)
+            if saved:
+                result.append(obj)
 
     return result
 
@@ -146,9 +146,9 @@ def collect_torrentkim():
                 continue
 
             saved, obj = save_data(title, magnet, url_home + href, category)
-            if saved is None:
-                break
-            result.append(obj)
+            if saved:
+                result.append(obj)
+
     return result
 
 
@@ -256,9 +256,8 @@ def collect_torrentwiz():
 
             # print(title)
             saved, obj = save_data(title, magnet, href, category)
-            if saved is None:
-                break
-            result.append(obj)
+            if saved:
+                result.append(obj)
 
     return result
 
@@ -272,11 +271,13 @@ def save_data(title, magnet, url, category):
         pass
 
     try:
-        obj = Magnet.objects.get(magnet=magnet, url=url)
+        obj = Magnet.objects.get(magnet=magnet)
     except Magnet.DoesNotExist:
         obj = Magnet(title=title, magnet=magnet, url=url, category=category)
         obj.save()
         saved = True
+    except Magnet.MultipleObjectsReturned:
+        obj = Magnet.objects.filter(magnet=magnet)[0]
 
     return saved, obj
 
