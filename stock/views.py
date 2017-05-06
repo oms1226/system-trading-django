@@ -2,6 +2,34 @@ from django.shortcuts import render
 from .stock import StockManager
 
 
+def index(request):
+    """개략적인 상황을 보여준다."""
+    # TODO: 상황을 보여주기 위한 데이터를 생성한다
+    result_list = []
+    return render(request, 'stock/view.html', {'result': result_list})
+
+
+def read_file(request):
+    # 종목을 업데이트 한다
+    pass
+
+
+def collect(request):
+    """데이터를 조회한다."""
+    # 어떤 데이터를 조회하는가? 대상?
+    result_list = []
+    return render(request, 'stock/collect.html', {'result': result_list})
+
+
+def view(request, code):
+    # 오늘까지의 데이터가 있는가?
+    # 데이터 조회는 언제 할 것인가
+    # 전날 데이터는 오전 8시?
+    # 데이터가 모두 있다고 가정한다면 데이터베이스에 데이터를 읽어서 보여준다
+    data = []
+    return render(request, 'stock/view.html', {'data': data})
+
+
 # Create your views here.
 def sell(request):
     pass

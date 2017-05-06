@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import re
+import sys
 import urllib.request
 import logging
 import socket
@@ -71,8 +72,6 @@ def collect_tfreeca():
         category = url_ref[0]
         url = url_ref[1]
 
-        print('처리중', category, url_ref);
-
         bs = get_bs(url_home, url)
         bs_trs = bs.find('table', {'class': 'b_list'}).findAll('tr')
 
@@ -88,12 +87,51 @@ def collect_tfreeca():
             bs_torrent = get_bs(url_home, torrent_src)
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
 
-            print("처리중 → ", title)
+            saved, obj = save_data(title, magnet, url_home + href, category)
+            if saved:
+                result.append(obj)
+
+    return result
+
+
+def collect_torrentkim():
+    url_home = 'https://torrentkim10.net/'
+    url_ref_list = [
+        ['tv', 'torrent_variety/torrent1.htm'],
+    ]
+
+    result = list()
+
+    for url_ref in url_ref_list:
+        category = url_ref[0]
+        url = url_ref[1]
+
+        bs = get_bs(url_home, url)
+        bs_trs = bs.find('table', {'class': 'board_list'}).findAll('tr')
+
+        for bs_tr in bs_trs:
+            if 'class' not in bs_tr.attrs:
+                continue
+            if 'style' in bs_tr.attrs:
+                if 'display:none' == bs_tr['style']:
+                    continue
+            a_tag = bs_tr.find("td", {"class": 'subject'}).find('a')
+            title = a_tag.text
+            href = a_tag['href'][3:]        # ../ 에서 .. 제거
+
+            bs_content = get_bs(url_home, href)
+            inputs = bs_content.findAll('input')
+            magnet = None
+            for input in inputs:
+                if 'readonly' in input.attrs:
+                    magnet = input['value']
+                    break
+            if magnet is None:
+                continue
 
             saved, obj = save_data(title, magnet, url_home + href, category)
-            if saved is None:
-                break
-            result.append(obj)
+            if saved:
+                result.append(obj)
 
     return result
 
@@ -103,18 +141,19 @@ def collect_backgound():
 
     # 이름, 함수
     torrents = {
-        '토렌트위즈': collect_torrentwiz,
-        '티프리카': collect_tfreeca,
+        # '토렌트위즈': collect_torrentwiz,
+        # '티프리카': collect_tfreeca,
+        '토렌트킴': collect_torrentkim,
     }
 
     for name, func in torrents.items():
-        result = []
         rst = ''
 
         try:
             result = func()
         except:
-            settings.SLACK.chat.post_message(channel, name + ' 실패')
+            print(sys.exc_info()[0])
+            settings.SLACK.chat.post_message(channel, name + ' 실패', sys.exc_info()[0])
         else:
             if len(result) > 0:
                 for obj in result:
@@ -192,14 +231,16 @@ def collect_torrentwiz():
 
             # print(title)
             saved, obj = save_data(title, magnet, href, category)
-            if saved is None:
-                break
-            result.append(obj)
+            if saved:
+                result.append(obj)
+
     return result
 
 
 def save_data(title, magnet, url, category):
     saved = None
+
+    print("[save_data]", title, magnet, url, category)
 
     try:
         obj = Magnet.objects.get(magnet=magnet)
