@@ -142,7 +142,7 @@ def collect_backgound():
     # 이름, 함수
     torrents = {
         # '토렌트위즈': collect_torrentwiz,
-        # '티프리카': collect_tfreeca,
+        '티프리카': collect_tfreeca,
         '토렌트킴': collect_torrentkim,
     }
 
