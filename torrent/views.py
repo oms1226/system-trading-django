@@ -241,7 +241,7 @@ def collect_torrentwiz():
 def save_data(title, magnet, url, category):
     saved = None
 
-    print("[save_data]", title, magnet, url, category)
+    print("[save_data]", title.encode('utf-8'), magnet, url, category)
 
     try:
         obj = Magnet.objects.get(magnet=magnet)
