@@ -58,12 +58,12 @@ def collect_tfreeca():
     url_home = 'http://www.tfreeca22.com/'
     url_ref_list = [
         ['tv', 'board.php?mode=list&b_id=tent'],
-        ['tv', 'board.php?mode=list&b_id=tdrama'],
-        ['tv', 'board.php?mode=list&b_id=tv'],
-        ['movie', 'board.php?mode=list&b_id=tmovie'],
-        ['ani', 'board.php?mode=list&b_id=tani'],
         ['music', 'board.php?mode=list&b_id=tmusic'],
-        ['util', 'board.php?mode=list&b_id=util'],
+        # ['tv', 'board.php?mode=list&b_id=tdrama'],
+        # ['tv', 'board.php?mode=list&b_id=tv'],
+        # ['movie', 'board.php?mode=list&b_id=tmovie'],
+        # ['ani', 'board.php?mode=list&b_id=tani'],
+        # ['util', 'board.php?mode=list&b_id=util'],
     ]
 
     result = list()
@@ -97,8 +97,9 @@ def collect_tfreeca():
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
 
             saved, obj = save_data(title, magnet, url_home + href, category)
-            if saved:
-                result.append(obj)
+            if saved is None:
+                break
+            result.append(obj)
 
     return result
 
@@ -145,9 +146,9 @@ def collect_torrentkim():
                 continue
 
             saved, obj = save_data(title, magnet, url_home + href, category)
-            if saved:
-                result.append(obj)
-
+            if saved is None:
+                break
+            result.append(obj)
     return result
 
 
@@ -255,8 +256,9 @@ def collect_torrentwiz():
 
             # print(title)
             saved, obj = save_data(title, magnet, href, category)
-            if saved:
-                result.append(obj)
+            if saved is None:
+                break
+            result.append(obj)
 
     return result
 
@@ -270,7 +272,7 @@ def save_data(title, magnet, url, category):
         pass
 
     try:
-        obj = Magnet.objects.get(magnet=magnet)
+        obj = Magnet.objects.get(magnet=magnet, url=url)
     except Magnet.DoesNotExist:
         obj = Magnet(title=title, magnet=magnet, url=url, category=category)
         obj.save()
