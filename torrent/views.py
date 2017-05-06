@@ -198,6 +198,7 @@ def collect(request):
 def get_bs(url_home, url_ref=""):
     url = url_home + url_ref
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    bs = None
     try:
         html = urllib.request.urlopen(req, timeout=10).read()
         bs = BeautifulSoup(html, 'html.parser', from_encoding='utf-8')
