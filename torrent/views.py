@@ -73,6 +73,9 @@ def collect_tfreeca():
         url = url_ref[1]
 
         bs = get_bs(url_home, url)
+        if bs is None:
+            continue
+
         bs_trs = bs.find('table', {'class': 'b_list'}).findAll('tr')
 
         for bs_tr in bs_trs:
@@ -82,9 +85,15 @@ def collect_tfreeca():
                     continue
             href = bs_tr.find("a", {"class": re.compile(r'title')})['href']
             bs_content = get_bs(url_home, href)
+            if bs_content is None:
+                continue
+
             title = bs_content.find('td', {'class': 'view_t2'})['title']
             torrent_src = bs_content.find('iframe', {'id': 'external-frame'})['src']
             bs_torrent = get_bs(url_home, torrent_src)
+            if bs_torrent is None:
+                continue
+
             magnet = bs_torrent.find('div', {'class': 'torrent_magnet'}).find('a')['href']
 
             saved, obj = save_data(title, magnet, url_home + href, category)
@@ -107,6 +116,9 @@ def collect_torrentkim():
         url = url_ref[1]
 
         bs = get_bs(url_home, url)
+        if bs is None:
+            continue
+
         bs_trs = bs.find('table', {'class': 'board_list'}).findAll('tr')
 
         for bs_tr in bs_trs:
@@ -120,6 +132,9 @@ def collect_torrentkim():
             href = a_tag['href'][3:]        # ../ 에서 .. 제거
 
             bs_content = get_bs(url_home, href)
+            if bs_content is None:
+                continue
+
             inputs = bs_content.findAll('input')
             magnet = None
             for input in inputs:
@@ -186,7 +201,9 @@ def get_bs(url_home, url_ref=""):
         html = urllib.request.urlopen(req, timeout=10).read()
         bs = BeautifulSoup(html, 'html.parser', from_encoding='utf-8')
     except socket.timeout:
-        print(url)
+        print('except socket.timeout:', url)
+    except:
+        print('except', url)
     return bs
 
 
@@ -213,6 +230,9 @@ def collect_torrentwiz():
         category = url_ref[0]
         url = url_ref[1]
         bs = get_bs(url_home, url)
+        if bs is None:
+            continue
+
         bs_trs = bs.find('table', {'class': 'list-pc'}).find('tbody').findAll('tr')
 
         for bs_tr in bs_trs:
@@ -222,6 +242,9 @@ def collect_torrentwiz():
             href = bs_tr.find('td', {'class': 'list-subject'}).find('a')['href']
             # 상세 페이지 이동
             bs_content = get_bs(href)
+            if bs_content is None:
+                continue
+
             title = bs_content.find('div', {'class': 'view-wrap'}).find('h1').text
             a_tags = bs_content.findAll('a', {'class': 'view_file_download'})
             for a_tag in a_tags:
