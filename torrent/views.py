@@ -170,12 +170,13 @@ def collect(request):
     global collect_threading
 
     if collect_threading and collect_threading.isAlive():
-        return HttpResponse("collect 요청이 처리중입니다.", content_type="charset=utf-8")
+        msg = "collect 요청이 처리중입니다."
     else:
         collect_threading = threading.Thread(target=collect_backgound, args=(), kwargs={})
         collect_threading.setDaemon(True)
         collect_threading.start()
-    return HttpResponse("collect 요청되었습니다.", content_type="charset=utf-8")
+        msg = "collect 요청되었습니다."
+    return render(request, 'torrent/result.html', {'msg': msg})
 
 
 def get_bs(url_home, url_ref=""):
