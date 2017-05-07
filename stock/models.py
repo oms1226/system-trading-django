@@ -1,22 +1,38 @@
 from django.db import models
+from django.utils.timezone import now
 
 # Create your models here.
 
 
-class Stock(models.Model):
-    code = models.CharField(max_length=200)
+class StockCode(models.Model):
+    code = models.CharField(db_index=True, max_length=200)
     name = models.CharField(max_length=500)
     reg_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.question_text
+        return self.name
 
-"""
-야후
-- 코스피 : 종목코드.KS
-- 코스닥 : 종목코드.KQ
 
-구글
-- 코스피 : KRX:종목코드
-- 코스닥 : KOSDAQ:종목코드
-"""
+class StockData(models.Model):
+    code = models.CharField(db_index=True, max_length=200)
+    date = models.CharField(db_index=True, max_length=10)
+    open = models.FloatField(null=True)
+    high = models.FloatField(null=True)
+    low = models.FloatField(null=True)
+    close = models.FloatField(null=True)
+    adj_close = models.FloatField(null=True)
+    volume = models.FloatField(null=True)
+    ma_5 = models.FloatField(null=True)
+    ma_20 = models.FloatField(null=True)
+    ma_60 = models.FloatField(null=True)
+    mv_5 = models.FloatField(null=True)
+    mv_20 = models.FloatField(null=True)
+    mv_60 = models.FloatField(null=True)
+    ra_5 = models.FloatField(null=True)
+    ra_20 = models.FloatField(null=True)
+    reg_date = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return self.code
+
+

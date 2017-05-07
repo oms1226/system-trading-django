@@ -2,6 +2,25 @@
 # System Trading django
 
 
+## 야후, 구글 구분
+
+야후
+- 코스피 : 종목코드.KS
+- 코스닥 : 종목코드.KQ
+
+구글
+- 코스피 : KRX:종목코드
+- 코스닥 : KOSDAQ:종목코드
+
+
+
+
+## 목록 조회하기
+
+- 코스피 : http://finance.daum.net/quote/all.daum?type=U&stype=P
+- 코스닥 : http://finance.daum.net/quote/all.daum?type=U&stype=Q
+
+
 ## pyrebase 설치
 
 윈도우에서 pip 설치시 오류 발생

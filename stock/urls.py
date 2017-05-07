@@ -8,7 +8,7 @@ app_name = 'stock'
 urlpatterns = [
     # ex: /stock/
     url(r'^$', views.index, name='index'),
-    url(r'^analyze/$', views.analyze, name='analyze'),
+    url(r'^a/$', views.analyze, name='analyze'),
     url(r'^v/(?P<code>.+)/', views.view, name='view'),
-    #url(r'^sell/$', views.sell, name='sell'),
+    url(r'^c/$', views.collect, name='collect'),
 ]

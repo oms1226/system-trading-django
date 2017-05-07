@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .stock import StockManager
+from django.conf import settings
 
 
 def index(request):
@@ -9,16 +10,29 @@ def index(request):
     return render(request, 'stock/view.html', {'result': result_list})
 
 
-def read_file(request):
+def update_stock(request):
     # 종목을 업데이트 한다
+    # 코스피 : http://finance.daum.net/quote/all.daum?type=U&stype=P
+    # 코스닥 : http://finance.daum.net/quote/all.daum?type=U&stype=Q
     pass
+
+
+def send_to_slack(msg):
+    channel = 'bot_stock'
+    settings.SLACK.chat.post_message(channel, msg)
 
 
 def collect(request):
     """데이터를 조회한다."""
     # 어떤 데이터를 조회하는가? 대상?
-    result_list = []
-    return render(request, 'stock/collect.html', {'result': result_list})
+    targets = ['A001525', 'A023350', 'A018670']
+    for target in targets:
+        # 데이터를 가져와서 저장한다.
+        rst = StockManager.save_recent_data('A001525')
+        if rst:
+            send_to_slack('[데이터저장] : {}'.format(target))
+
+    return render(request, 'stock/collect.html', {'msg': '데이터 저장 완료'})
 
 
 def view(request, code):
