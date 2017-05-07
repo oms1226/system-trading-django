@@ -1,6 +1,10 @@
+import json
 from django.shortcuts import render
-from .stock import StockManager
 from django.conf import settings
+from django.http import HttpResponse
+from .stock import StockManager
+from .stock.StrategyRa5 import StrategyRa5
+from .stock.StockSimulator import StockSimulator
 
 
 def index(request):
@@ -35,18 +39,25 @@ def collect(request):
     return render(request, 'stock/collect.html', {'msg': '데이터 저장 완료'})
 
 
-def view(request, code):
-    # 오늘까지의 데이터가 있는가?
-    # 데이터 조회는 언제 할 것인가
-    # 전날 데이터는 오전 8시?
-    # 데이터가 모두 있다고 가정한다면 데이터베이스에 데이터를 읽어서 보여준다
-    data = []
-    return render(request, 'stock/view.html', {'data': data})
+def view(request, strategy, code):
+    """시물레이션을 보여준다."""
+    # return render(request, 'stock/view.html', {'strategy': strategy, 'code': code})
+    return render(request, 'stock/view.html', {'strategy': strategy, 'code': code})
 
 
-# Create your views here.
-def sell(request):
-    pass
+def simulate(request, strategy, code):
+    balance_history = []
+
+    if strategy == 'ra5':
+        strategy_func = StrategyRa5()
+    simulator = StockSimulator(strategy_func, code)
+    balance_history = simulator.get_balance_history()
+    buy_history = simulator.get_buy_history()
+    sell_history = simulator.get_sell_history()
+
+    return HttpResponse(json.dumps([balance_history, buy_history, sell_history]), content_type='text/json')
+
+
 
 
 B20_T05 = 'B20_T05'
