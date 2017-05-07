@@ -174,4 +174,3 @@ db.sqlite3
 settings.py
 *accountkey.json
 __pychche__
-*.wiki
