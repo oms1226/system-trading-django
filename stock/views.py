@@ -16,9 +16,9 @@ def index(request):
     # 대상들
     codes = StockCode.objects.all()
     # 매수전략
-    buys = StrategyBuy.objects.all()
+    buys = StrategyBuy.objects.filter(use_yn='Y')
     # 매도전략
-    sells = StrategySell.objects.all()
+    sells = StrategySell.objects.filter(use_yn='Y')
     # 초기금
     money = 1000000
     return render(request, 'stock/simulate.html'
@@ -68,19 +68,19 @@ def collect(request):
     return render(request, 'stock/collect.html', {'msg': '데이터 저장 완료'})
 
 
-def view(request, strategy, code):
-    """시물레이션을 보여준다."""
-    # return render(request, 'stock/view.html', {'strategy': strategy, 'code': code})
-    # 대상들
-    codes = StockCode.objects.all()
-    # 매수전략
-    buys = StrategyBuy.objects.filter(use_yn='Y')
-    # 매도전략
-    sells = StrategySell.objects.filter(use_yn='Y')
-    # 초기금
-    return render(request, 'stock/simulate.html', {'codes': codes
-        , 'buys': buys
-        , 'sells': sells})
+# def view(request, strategy, code):
+#     """시물레이션을 보여준다."""
+#     # return render(request, 'stock/view.html', {'strategy': strategy, 'code': code})
+#     # 대상들
+#     codes = StockCode.objects.all()
+#     # 매수전략
+#     buys = StrategyBuy.objects.filter(use_yn='Y')
+#     # 매도전략
+#     sells = StrategySell.objects.filter(use_yn='Y')
+#     # 초기금
+#     return render(request, 'stock/simulate.html', {'codes': codes
+#         , 'buys': buys
+#         , 'sells': sells})
 
 
 def simulate(request, code, buy_code, sell_code, start_money):
