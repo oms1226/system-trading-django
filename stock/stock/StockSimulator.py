@@ -5,6 +5,8 @@ from .AccountManager import AccountManager
 
 def get_unix_time(date):
     print("[date]", date)
+    print(datetime.strptime(date, '%Y-%m-%d'))
+    print(datetime.strptime(date, '%Y-%m-%d').strftime('%s'))
     return int(datetime.strptime(date, '%Y-%m-%d').strftime('%s')) * 1000
 
 
