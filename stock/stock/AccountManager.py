@@ -65,3 +65,5 @@ class AccountManager:
             # sum_of_stock_price += stock.get_price() * stock.get_count() * self.sell_rate
             sum_of_stock_price += close * stock.get_count() * self.sell_rate
         return self.balance + sum_of_stock_price
+
+
