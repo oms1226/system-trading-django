@@ -4,6 +4,7 @@ from .AccountManager import AccountManager
 
 
 def get_unix_time(date):
+    print("[date]", date)
     return int(datetime.strptime(date, '%Y-%m-%d').strftime('%s')) * 1000
 
 
