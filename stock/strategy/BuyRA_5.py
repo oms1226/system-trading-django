@@ -1,4 +1,4 @@
-class StrategyRa5:
+class BuyRA_5:
     def __init__(self):
         self.datas = None
         self.data_list = []

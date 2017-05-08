@@ -5,12 +5,23 @@ from django.utils.timezone import now
 
 
 class StockCode(models.Model):
-    code = models.CharField(db_index=True, max_length=200)
+    yahoo_code = models.CharField(db_index=True, max_length=200)
     name = models.CharField(max_length=500)
     reg_date = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.name
+
+class StrategyBuy(models.Model):
+    code = models.CharField(db_index=True, max_length=200)
+    name = models.CharField(max_length=500)
+    use_yn = models.CharField(max_length=1, default='Y')
+    reg_date = models.DateTimeField(auto_now_add=True)
+
+
+class StrategySell(models.Model):
+    code = models.CharField(db_index=True, max_length=200)
+    name = models.CharField(max_length=500)
+    use_yn = models.CharField(max_length=1, default='Y')
+    reg_date = models.DateTimeField(auto_now_add=True)
 
 
 class StockData(models.Model):

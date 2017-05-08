@@ -10,42 +10,46 @@ def get_unix_time(date):
 
 class StockSimulator:
     """시뮬레이션 합니다."""
-    def __init__(self, strategy, code):
-        self.strategy = strategy
+    def __init__(self, code, strategy_buy, strategy_sell, start_money):
         self.code = code
+        self.strategy_buy = strategy_buy
+        self.strategy_sell = strategy_sell
+        self.start_money = int(start_money)
 
         # 데이터 조회
         self.stock_datas = StockData.objects.filter(code=code).order_by('date')
-        self.strategy.set_datas(self.stock_datas)
+        self.strategy_buy.set_datas(self.stock_datas)
+        self.strategy_sell.set_datas(self.stock_datas)
+
         self.balance_history = []
         self.buy_history = []
         self.sell_history = []
+
         self.simulate()
 
     def simulate(self):
-        # 데이터를 하나씩 읽는다.
-        starting_amount = 1000000
-        holding_max_amount = 1000000
-        account_manager = AccountManager(starting_amount, holding_max_amount)
+        # holding_max_amount = 1000000
+        account_manager = AccountManager(self.start_money, self.start_money)
 
         for data in self.stock_datas:
             # 보유주가 있는가?
             if account_manager.have_stocks():
-                max_adj_close = account_manager.get_max_adj_close()
-                rst = self.strategy.should_i_sell(data.date, max_adj_close)
+                rst = self.strategy_sell.should_i_sell(data.date)
                 if rst:
                     sell_count = account_manager.sell(data.adj_close)
-                    print('판매', data.date, data.adj_close)
+                    print('판매', self.code, data.date, data.close)
                     self.sell_history.append({'date': data.date, 'count': sell_count})
             # 살만한가?
-            rst = self.strategy.should_i_buy(data.date)
+            rst = self.strategy_buy.should_i_buy(data.date)
             if rst:
                 buy_count = account_manager.buy(data.adj_close)
-                print('구매', data.date, data.adj_close)
                 if buy_count > 0:
+                    print('구매', self.code, data.date, data.adj_close)
                     self.buy_history.append({'date': data.date, 'count': buy_count})
+                    self.strategy_sell.set_close_start()
 
-            account_manager.compare_adj_close(data.adj_close)
+            self.strategy_sell.set_close(data.close)
+
             balance_with_stock = account_manager.get_balance_with_stock(data.close)
             self.balance_history.append({'date': data.date, 'balance': balance_with_stock
                                         , 'adj_close': data.adj_close

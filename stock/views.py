@@ -1,17 +1,46 @@
 import json
+import os
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
 from .stock import StockManager
-from .stock.StrategyRa5 import StrategyRa5
+from .strategy.BuyRA_5 import BuyRA_5
+from .strategy.BuyGC_5 import BuyGC_5
+from .strategy.SellDC_5 import SellDC_5
+from .strategy.SellMAX_10 import SellMAX_10
 from .stock.StockSimulator import StockSimulator
+from .models import StockCode, StrategyBuy, StrategySell
 
 
 def index(request):
-    """개략적인 상황을 보여준다."""
-    # TODO: 상황을 보여주기 위한 데이터를 생성한다
-    result_list = []
-    return render(request, 'stock/view.html', {'result': result_list})
+    # 대상들
+    codes = StockCode.objects.all()
+    # 매수전략
+    buys = StrategyBuy.objects.all()
+    # 매도전략
+    sells = StrategySell.objects.all()
+    # 초기금
+    money = 1000000
+    return render(request, 'stock/simulate.html'
+                  , {'codes': codes, 'buys': buys, 'sells': sells
+                      , 'money': money
+                     })
+
+
+def add_stock(request):
+    # name, yahoo_code,
+    # 파일읽기
+    file = os.path.join(settings.SITE_ROOT, '../stock/data/kospi_yahoo.csv')
+    f = open(file, 'rt')
+    lines = f.readlines()
+    for line in lines:
+        datas = line.split(',')
+        yahoo_code = datas[0]
+        name = datas[1]
+        obj, created = StockCode.objects.get_or_create(
+            yahoo_code=yahoo_code, name=name
+        )
+    f.close()
 
 
 def update_stock(request):
@@ -42,10 +71,19 @@ def collect(request):
 def view(request, strategy, code):
     """시물레이션을 보여준다."""
     # return render(request, 'stock/view.html', {'strategy': strategy, 'code': code})
-    return render(request, 'stock/view.html', {'strategy': strategy, 'code': code})
+    # 대상들
+    codes = StockCode.objects.all()
+    # 매수전략
+    buys = StrategyBuy.objects.filter(use_yn='Y')
+    # 매도전략
+    sells = StrategySell.objects.filter(use_yn='Y')
+    # 초기금
+    return render(request, 'stock/simulate.html', {'codes': codes
+        , 'buys': buys
+        , 'sells': sells})
 
 
-def simulate(request, strategy, code):
+def simulate(request, code, buy_code, sell_code, start_money):
     #최근 데이터를 조회한다
     print('최근 데이터 저장 시작', code)
     rst = StockManager.save_recent_data(code)
@@ -53,11 +91,19 @@ def simulate(request, strategy, code):
     if rst is None:
         send_to_slack('[데이터저장 실패] : {}'.format(code))
 
-    if strategy == 'ra5':
-        strategy_func = StrategyRa5()
-    print('시뮬레이션 시작', strategy)
-    simulator = StockSimulator(strategy_func, code)
-    print('시뮬레이션 종료', strategy)
+    if buy_code == 'RA_5':
+        buy_func = BuyRA_5()
+    elif buy_code == 'GC_5':
+        buy_func = BuyGC_5()
+
+    if sell_code == 'MAX_10':
+        sell_func = SellMAX_10()
+    elif sell_code == 'DC_5':
+        sell_func = SellDC_5()
+
+    print('시뮬레이션 시작', code, buy_code, sell_code, start_money)
+    simulator = StockSimulator(code, buy_func, sell_func, start_money)
+    print('시뮬레이션 종료', code, buy_code, sell_code, start_money)
 
     balance_history = simulator.get_balance_history()
     buy_history = simulator.get_buy_history()
