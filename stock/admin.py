@@ -28,6 +28,3 @@ class StockDataAdmin(admin.ModelAdmin):
 admin.site.register(StockData, StockDataAdmin)
 
 
-
-
-
