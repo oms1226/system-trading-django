@@ -37,6 +37,9 @@
             <div class="panel-heading">시뮬레이션 조건</div>
             <div class="row">
                 <div class="col-md-2">
+                    <button id="start_btn" class="btn btn-default" type="button" onclick="start()">시작</button>
+                </div>
+                <div class="col-md-2">
                     대상:
                     <select id="code" class="selectpicker">
                     {% for code in codes %}
@@ -64,9 +67,7 @@
                     초기금:
                     <input type="number" id="start_money" min="0" value="{{ money }}">
                 </div>
-                <div class="col-md-2">
-                    <button id="start_btn" class="btn btn-default" type="button" onclick="start()">시작</button>
-                </div>
+
             </div>
         </div>
     </div>
