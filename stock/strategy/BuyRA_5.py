@@ -28,16 +28,16 @@ class BuyRA_5:
         if self.datas.get(date=date).ra_5 < 0.99:
             return False
 
-        # 20일 평균선이 3일동안 상승추세에 있어야 함
+        # 5일 평균선이 3일동안 상승추세에 있어야 함
 
-        last_ma_20 = 0
+        last_ma_5 = 0
         for i in range(compare_days):
             sidx = index - compare_days + i
             if sidx < 0:
                 return False
-            ma_20 = self.data_list[sidx].ma_20
-            if ma_20 > last_ma_20:
-                last_ma_20 = ma_20
+            ma_5 = self.data_list[sidx].ma_5
+            if ma_5 > last_ma_5:
+                last_ma_5 = ma_5
             else:
                 return False
 
