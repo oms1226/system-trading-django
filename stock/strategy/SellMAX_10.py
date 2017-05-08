@@ -1,5 +1,6 @@
 
 class SellMAX_10:
+    """10% 이상 손실이 발생하면 매도 한다."""
     def __init__(self, ):
         self.max_rate = 0.9
         self.max_close = 0
