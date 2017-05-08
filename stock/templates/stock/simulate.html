@@ -1,3 +1,5 @@
+{% load static from staticfiles %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +44,7 @@
             width: 100%;
             height: 100%;
             z-index: 9999;
-            background: url('/static/stock/images/loader-64x/Preloader_2.gif') center no-repeat #fff;
+            background: url("{% static 'stock/images/loader-64x/Preloader_2.gif' %}") center no-repeat #fff;
         }
     </style>
 </head>
