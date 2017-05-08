@@ -5,7 +5,6 @@ from django.http import HttpResponse
 from .stock import StockManager
 from .stock.StrategyRa5 import StrategyRa5
 from .stock.StockSimulator import StockSimulator
-from .stock.DataManager import DataManager
 
 
 def index(request):
