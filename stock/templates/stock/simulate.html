@@ -19,6 +19,7 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
 
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
 
     <style>
         body{
@@ -28,6 +29,20 @@
             height: 80%;
             width: 100%;
             position: absolute;
+        }
+        /* Paste this css to your style sheet file or under head tag */
+        /* This only works with JavaScript,
+        if it's not present, don't show loader */
+        .no-js #loader { display: none;  }
+        .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+        .se-pre-con {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: url('/static/stock/images/loader-64x/Preloader_2.gif') center no-repeat #fff;
         }
     </style>
 </head>
@@ -73,10 +88,17 @@
     </div>
 
     <div id="container" style="min-width: 310px; margin: 0 auto"></div>
+    <div class="se-pre-con"></div>
 
     <script type="text/javascript">
+
+        $(function() {
+            // Animate loader off screen
+            $(".se-pre-con").fadeOut("slow");
+        });
+
         function start(){
-            $("start_btn").attr("disabled",true);
+            $(".se-pre-con").fadeIn("slow");
 
             code = $('#code').val();
             buy = $('#buy').val();
@@ -84,7 +106,7 @@
             start_money = $('#start_money').val();
             url = '/stock/s/' + code + '/' + buy + '/' + sell + '/' + start_money + '/';
             $.getJSON(url, function(datas){
-                $("start_btn").removeAttr("disabled");
+                $(".se-pre-con").fadeOut("slow");
                 draw_stock(datas);
             });
         }
