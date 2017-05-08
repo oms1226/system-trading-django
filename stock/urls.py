@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from . import views
 
@@ -16,4 +17,7 @@ urlpatterns = [
     url(r'^s/(?P<code>.+)/(?P<buy_code>.+)/(?P<sell_code>.+)/(?P<start_money>.+)/', views.simulate, name='simulate'),
 
     url(r'^add/', views.add_stock, name='add')
+
 ]
+
+urlpatterns += staticfiles_urlpatterns()
