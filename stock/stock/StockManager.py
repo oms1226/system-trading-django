@@ -72,8 +72,10 @@ def save_recent_data(code, stock_type="kospi"):
         print("[조회 실패]", code)
         return None
     df = df.replace(np.nan, 0, regex=True)
-    # 날짜별 데이터
+
     for index, row in df.iterrows():
+        if last_date > index:
+            continue
         # 데이터를 저장한다
         date = get_date_format(index)
         # 키는 날짜와 코드

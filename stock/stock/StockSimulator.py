@@ -4,9 +4,7 @@ from .AccountManager import AccountManager
 
 
 def get_unix_time(date):
-    print("[date]", date)
-    print(datetime.strptime(date, '%Y-%m-%d'))
-    print(datetime.strptime(date, '%Y-%m-%d').strftime('%s'))
+    # strftime('%s') 부분이 윈도우에서 동작하지 않는다.
     return int(datetime.strptime(date, '%Y-%m-%d').strftime('%s')) * 1000
 
 
@@ -38,18 +36,18 @@ class StockSimulator:
                 if rst:
                     sell_count = account_manager.sell(data.adj_close)
                     print('판매', data.date, data.adj_close)
-                    self.sell_history.append({'date': get_unix_time(data.date), 'count': sell_count})
+                    self.sell_history.append({'date': data.date, 'count': sell_count})
             # 살만한가?
             rst = self.strategy.should_i_buy(data.date)
             if rst:
                 buy_count = account_manager.buy(data.adj_close)
                 print('구매', data.date, data.adj_close)
                 if buy_count > 0:
-                    self.buy_history.append({'date': get_unix_time(data.date), 'count': buy_count})
+                    self.buy_history.append({'date': data.date, 'count': buy_count})
 
             account_manager.compare_adj_close(data.adj_close)
             balance_with_stock = account_manager.get_balance_with_stock(data.close)
-            self.balance_history.append({'date': get_unix_time(data.date), 'balance': balance_with_stock
+            self.balance_history.append({'date': data.date, 'balance': balance_with_stock
                                         , 'adj_close': data.adj_close
                                         , 'ma_5': data.ma_5, 'ma_20': data.ma_20
                                         , 'open': data.open, 'high': data.high, 'low': data.low, 'close': data.close})
