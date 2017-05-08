@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from .stock import StockManager
 from .stock.StrategyRa5 import StrategyRa5
 from .stock.StockSimulator import StockSimulator
+from .stock.DataManager import DataManager
 
 
 def index(request):
@@ -32,7 +33,7 @@ def collect(request):
     targets = ['A001525', 'A023350', 'A018670']
     for target in targets:
         # 데이터를 가져와서 저장한다.
-        rst = StockManager.save_recent_data('A001525')
+        rst = StockManager.save_recent_data(target)
         if rst:
             send_to_slack('[데이터저장] : {}'.format(target))
 
@@ -46,11 +47,19 @@ def view(request, strategy, code):
 
 
 def simulate(request, strategy, code):
-    balance_history = []
+    #최근 데이터를 조회한다
+    print('최근 데이터 저장 시작', code)
+    rst = StockManager.save_recent_data(code)
+    print('최근 데이터 저장 결과', rst)
+    if rst is None:
+        send_to_slack('[데이터저장 실패] : {}'.format(code))
 
     if strategy == 'ra5':
         strategy_func = StrategyRa5()
+    print('시뮬레이션 시작', strategy)
     simulator = StockSimulator(strategy_func, code)
+    print('시뮬레이션 종료', strategy)
+
     balance_history = simulator.get_balance_history()
     buy_history = simulator.get_buy_history()
     sell_history = simulator.get_sell_history()

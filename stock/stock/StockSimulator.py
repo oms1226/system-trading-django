@@ -24,7 +24,7 @@ class StockSimulator:
     def simulate(self):
         # 데이터를 하나씩 읽는다.
         starting_amount = 1000000
-        holding_max_amount = 100000
+        holding_max_amount = 1000000
         account_manager = AccountManager(starting_amount, holding_max_amount)
 
         for data in self.stock_datas:
@@ -33,21 +33,23 @@ class StockSimulator:
                 max_adj_close = account_manager.get_max_adj_close()
                 rst = self.strategy.should_i_sell(data.date, max_adj_close)
                 if rst:
-                    account_manager.sell(data.adj_close)
+                    sell_count = account_manager.sell(data.adj_close)
                     print('판매', data.date, data.adj_close)
-                    self.sell_history.append({'date': get_unix_time(data.date), 'adj_close': data.adj_close})
+                    self.sell_history.append({'date': get_unix_time(data.date), 'count': sell_count})
             # 살만한가?
             rst = self.strategy.should_i_buy(data.date)
             if rst:
                 buy_count = account_manager.buy(data.adj_close)
                 print('구매', data.date, data.adj_close)
                 if buy_count > 0:
-                    self.buy_history.append({'date': get_unix_time(data.date), 'adj_close': data.adj_close})
+                    self.buy_history.append({'date': get_unix_time(data.date), 'count': buy_count})
 
             account_manager.compare_adj_close(data.adj_close)
-            balance_with_stock = account_manager.get_balance_with_stock()
+            balance_with_stock = account_manager.get_balance_with_stock(data.close)
             self.balance_history.append({'date': get_unix_time(data.date), 'balance': balance_with_stock
-                                        , 'adj_close': data.adj_close, 'close': data.close})
+                                        , 'adj_close': data.adj_close
+                                        , 'ma_5': data.ma_5, 'ma_20': data.ma_20
+                                        , 'open': data.open, 'high': data.high, 'low': data.low, 'close': data.close})
 
     def get_balance_history(self):
         return self.balance_history

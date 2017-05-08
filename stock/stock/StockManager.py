@@ -8,7 +8,8 @@ import numpy as np
 
 
 def get_from_yahoo(code, start_day, end_day, stock_type):
-    yahoo_code = get_yahoo_code(code, stock_type)
+    # yahoo_code = get_yahoo_code(code, stock_type)
+    yahoo_code = code
 
     try:
         df = data.DataReader(yahoo_code, 'yahoo', start_day, end_day)
@@ -55,16 +56,21 @@ def get_date(str_date):
 
 def save_recent_data(code, stock_type="kospi"):
     today = datetime.today()
+    last_date = today - timedelta(days=1000)
 
     # 저장된 가장 최근 날짜를 구한다.
     try:
         stock_data = StockData.objects.filter(code=code).order_by('-date').first()
-        last_date = stock_data.date
-        last_date = get_date(last_date) - timedelta(days=150)
+        if stock_data is not None:
+            last_date = stock_data.date
+            last_date = get_date(last_date) - timedelta(days=150)
     except StockData.DoesNotExist:
         last_date = today - timedelta(days=1000)
 
     df = get_from_yahoo(code, last_date, today, stock_type)
+    if df is None:
+        print("[조회 실패]", code)
+        return None
     df = df.replace(np.nan, 0, regex=True)
     # 날짜별 데이터
     for index, row in df.iterrows():
@@ -81,6 +87,8 @@ def save_recent_data(code, stock_type="kospi"):
                 'ra_5': row['RA_5'], 'ra_20': row['RA_20']
             },
         )
+        if created:
+            print("[저장완료]", code, date)
 
     return True
 

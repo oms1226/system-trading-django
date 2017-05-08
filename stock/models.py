@@ -32,6 +32,9 @@ class StockData(models.Model):
     ra_20 = models.FloatField(null=True)
     reg_date = models.DateTimeField(default=now)
 
+    class Meta:
+        unique_together = ('code', 'date')
+
     def __str__(self):
         return self.code
 

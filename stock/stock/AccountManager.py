@@ -25,6 +25,7 @@ class AccountManager:
         self.balance += adj_close * sellable_count * self.sell_rate
         self.holding_stocks = []
         self.max_adj_close = 0
+        return sellable_count
 
     def buy(self, adj_close):
         buyable_count = self.get_buyable_count(adj_close)
@@ -58,10 +59,9 @@ class AccountManager:
             if adj_close > self.max_adj_close:
                 self.max_adj_close = adj_close
 
-    def get_balance_with_stock(self):
+    def get_balance_with_stock(self, close):
         sum_of_stock_price = 0
         for stock in self.holding_stocks:
-            sum_of_stock_price = stock.get_price() * stock.get_count() * self.sell_rate
+            # sum_of_stock_price += stock.get_price() * stock.get_count() * self.sell_rate
+            sum_of_stock_price += close * stock.get_count() * self.sell_rate
         return self.balance + sum_of_stock_price
-
-

@@ -6,9 +6,17 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+
+    <style>
+    #container {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+    }
+    </style>
 </head>
 <body>
-    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div id="container" style="min-width: 310px; margin: 0 auto"></div>
 
     <script type="text/javascript">
     $.getJSON('/stock/s/{{ strategy }}/{{ code }}', function (datas) {
@@ -16,24 +24,27 @@
         var buy_history = datas[1];
         var sell_history = datas[2];
 
-        var adj_close = [];
         var balance = [];
-        var close = [];
         var buy_point = [];
         var sell_point = [];
+        var ma_5 = [];
+        var ma_20 = [];
+
+        var ohlc = [];
 
         for (var i = 0 ; i < balance_history.length; i += 1) {
             var data = balance_history[i];
             balance.push([data.date, data.balance]);
-            adj_close.push([data.date, data.adj_close]);
-            close.push([data.date, data.close]);
+            ohlc.push([data.date, data.open, data.high, data.low, data.close]);
+            ma_5.push([data.date, data.ma_5]);
+            ma_20.push([data.date, data.ma_20]);
         }
 
         for (var i = 0; i < buy_history.length; i += 1 ){
             var data = buy_history[i];
             buy_point.push({
                 x: data.date,
-                title: '매수',
+                title: '매수:' + data.count,
                 text: 'Shape: "circlepin"'
             });
         }
@@ -42,7 +53,7 @@
             var data = sell_history[i];
             sell_point.push({
                 x: data.date,
-                title: '매도',
+                title: '매도:' + data.count,
                 text: 'Shape: "circlepin"'
             });
         }
@@ -78,25 +89,29 @@
                 series: [{
                     id: 'balacne',
                     name: 'balance',
-                    data: balance
-                },{
-                    name: 'adj_close',
-                    data: adj_close,
+                    data: balance,
                     yAxis: 1
                 },{
-                    name: 'close',
-                    data: close,
-                    yAxis: 1
+                    type: 'candlestick',
+                    id: 'ohlc',
+                    name: 'ohlc',
+                    data: ohlc
+                },{
+                    name: 'ma_5',
+                    data: ma_5
+                },{
+                    name: 'ma_20',
+                    data: ma_20
                 },{
                     type: 'flags',
                     data: buy_point,
-                    onSeries: 'balacne',
+                    onSeries: 'ohlc',
                     shape: 'squarepin',
                     width: 16
                 },{
                     type: 'flags',
                     data: sell_point,
-                    onSeries: 'balacne',
+                    onSeries: 'ohlc',
                     shape: 'squarepin',
                     width: 16
                 },
