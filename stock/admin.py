@@ -22,4 +22,9 @@ class StrategySellAdmin(admin.ModelAdmin):
 admin.site.register(StrategySell, StrategySellAdmin)
 
 
-admin.site.register(StockData)
+class StockDataAdmin(admin.ModelAdmin):
+    list_display = [f.name for f in StockData._meta.fields]
+
+admin.site.register(StockData, StockDataAdmin)
+
+
