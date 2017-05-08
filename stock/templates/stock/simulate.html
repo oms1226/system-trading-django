@@ -65,7 +65,7 @@
                     <input type="number" id="start_money" min="0" value="{{ money }}">
                 </div>
                 <div class="col-md-2">
-                    <button class="btn btn-default" type="button" onclick="start()">시작</button>
+                    <button id="start_btn" class="btn btn-default" type="button" onclick="start()">시작</button>
                 </div>
             </div>
         </div>
@@ -75,13 +75,16 @@
 
     <script type="text/javascript">
         function start(){
+            $("start_btn").attr("disabled",true);
+
             code = $('#code').val();
             buy = $('#buy').val();
             sell = $('#sell').val();
             start_money = $('#start_money').val();
             url = '/stock/s/' + code + '/' + buy + '/' + sell + '/' + start_money + '/';
             $.getJSON(url, function(datas){
-               draw_stock(datas);
+                $("start_btn").removeAttr("disabled");
+                draw_stock(datas);
             });
         }
         function draw_stock(datas){
