@@ -106,7 +106,7 @@
             buy = $('#buy').val();
             sell = $('#sell').val();
             start_money = $('#start_money').val();
-            url = '/manager/s/' + code + '/' + buy + '/' + sell + '/' + start_money + '/';
+            url = '/stock/s/' + code + '/' + buy + '/' + sell + '/' + start_money + '/';
             $.getJSON(url, function(datas){
                 $(".se-pre-con").fadeOut("slow");
                 draw_stock(datas);
