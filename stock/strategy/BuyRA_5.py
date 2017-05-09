@@ -41,6 +41,18 @@ class BuyRA_5:
             else:
                 return False
 
+        # 60일 평균선이 3일동안 상승추세에 있어야 함
+        last_ma_60 = 0
+        for i in range(compare_days):
+            sidx = index - compare_days + i
+            if sidx < 0:
+                return False
+            ma_60 = self.data_list[sidx].ma_60
+            if ma_60 > last_ma_60:
+                last_ma_60 = ma_60
+            else:
+                return False
+
         return True
 
     def should_i_sell(self, date, max_adj_close):

@@ -7,6 +7,7 @@ class BaseModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     use_yn = models.CharField(max_length=1, default='Y')
+    desc = models.TextField()
 
     class Meta:
         abstract = True
