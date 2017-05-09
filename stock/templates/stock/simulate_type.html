@@ -139,11 +139,12 @@
 
             var ohlc = [];
 
+            debugger;
             for (var i = 0 ; i < balance_history.length; i += 1) {
                 var data = balance_history[i];
                 var date = convert_timestamp(data.date);
 
-                if (balance.length > 0){
+                if (balance.length > i){
                     balance[i][1] = balance[i][1] + data.balance;
                 }else{
                     balance.push([date, data.balance]);
