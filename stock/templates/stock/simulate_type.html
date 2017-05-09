@@ -187,18 +187,17 @@
                 series: [{
                     id: 'balacne',
                     name: 'balance',
-                    data: balance,
-                    yAxis: 1
+                    data: balance
                 },{
                     type: 'flags',
                     data: buy_point,
-                    onSeries: 'ohlc',
+                    onSeries: 'balacne',
                     shape: 'squarepin',
                     width: 16
                 },{
                     type: 'flags',
                     data: sell_point,
-                    onSeries: 'ohlc',
+                    onSeries: 'balacne',
                     shape: 'squarepin',
                     width: 16
                 },
