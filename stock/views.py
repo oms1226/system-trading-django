@@ -68,28 +68,13 @@ def collect(request):
     return render(request, 'stock/collect.html', {'msg': '데이터 저장 완료'})
 
 
-# def view(request, strategy, code):
-#     """시물레이션을 보여준다."""
-#     # return render(request, 'manager/view.html', {'strategy': strategy, 'code': code})
-#     # 대상들
-#     codes = StockCode.objects.all()
-#     # 매수전략
-#     buys = StrategyBuy.objects.filter(use_yn='Y')
-#     # 매도전략
-#     sells = StrategySell.objects.filter(use_yn='Y')
-#     # 초기금
-#     return render(request, 'manager/simulate.html', {'codes': codes
-#         , 'buys': buys
-#         , 'sells': sells})
-
-
-def simulate(request, code, buy_code, sell_code, start_money):
-    #최근 데이터를 조회한다
-    print('최근 데이터 저장 시작', code)
-    rst = StockManager.save_recent_data(code)
+def simulate(request, stock_code, buy_code, sell_code, start_money):
+    # 최근 데이터를 조회한다
+    print('최근 데이터 저장 시작', stock_code)
+    rst = StockManager.save_recent_data(stock_code)
     print('최근 데이터 저장 결과', rst)
     if rst is None:
-        send_to_slack('[데이터저장 실패] : {}'.format(code))
+        send_to_slack('[데이터저장 실패] : {}'.format(stock_code))
 
     if buy_code == 'RA_5':
         buy_func = BuyRA_5()
@@ -101,47 +86,12 @@ def simulate(request, code, buy_code, sell_code, start_money):
     elif sell_code == 'DC_5':
         sell_func = SellDC_5()
 
-    print('시뮬레이션 시작', code, buy_code, sell_code, start_money)
-    simulator = StockSimulator(code, buy_func, sell_func, start_money)
-    print('시뮬레이션 종료', code, buy_code, sell_code, start_money)
+    print('시뮬레이션 시작', stock_code, buy_code, sell_code, start_money)
+    simulator = StockSimulator(stock_code, buy_func, sell_func, start_money)
+    print('시뮬레이션 종료', stock_code, buy_code, sell_code, start_money)
 
     balance_history = simulator.get_balance_history()
     buy_history = simulator.get_buy_history()
     sell_history = simulator.get_sell_history()
 
     return HttpResponse(json.dumps([balance_history, buy_history, sell_history]), content_type='text/json')
-
-
-
-
-B20_T05 = 'B20_T05'
-B05_T20 = 'B05_T20'
-MA_5 = 'MA_5'
-MA_20 = 'MA_20'
-
-
-def analyze(request):
-    """살 종목을 추천한다."""
-    # 30일간의 데이터를 가져온다. 5일 평균, 20일 평균 포함
-    df = StockManager.get_df_one('A001525')
-
-    before = None
-    result = []
-
-    for index, row in df.iterrows():
-        if row[MA_5] and row[MA_20]:
-            ma5 = row[MA_5]
-            ma20 = row[MA_20]
-            if ma20 > ma5:
-                current = B05_T20
-            else:
-                current = B20_T05
-            if before:
-                if before == B05_T20 and current == B20_T05:
-                    # found
-                    result.append({
-                        'date': index.strftime('%Y-%m-%d'),
-                        'adjclose': row['Adj Close']
-                    })
-            before = current
-    return render(request, 'stock/analyze.html', {'result': result})
