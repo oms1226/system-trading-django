@@ -51,3 +51,5 @@ class StockData(BaseModel):
     class Meta:
         unique_together = ('code', 'date')
 
+
+
