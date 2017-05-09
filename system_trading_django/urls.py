@@ -23,6 +23,6 @@ urlpatterns = [
     url(r'^polls/', include('polls.urls')),
     url(r'^torrent/', include('torrent.urls')),
     url(r'^shopping/', include('shopping.urls')),
-    url(r'^manager/', include('stock.urls')),
+    url(r'^stock/', include('stock.urls')),
     url(r'^$', lambda r: HttpResponseRedirect('torrent/rss/')),
 ]
