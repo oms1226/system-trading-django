@@ -49,3 +49,6 @@ class StockData(BaseModel):
         unique_together = ('code', 'date')
 
 
+
+
+
