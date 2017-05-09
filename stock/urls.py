@@ -13,7 +13,7 @@ urlpatterns = [
     # url(r'^v/(?P<strategy>.+)/(?P<code>.+)/', views.view, name='view'),
     # /manager/s/ra5/A001525
     # url(r'^s/(?P<strategy>.+)/(?P<code>.+)/', views.simulate, name='simulate'),
-    url(r'^s/(?P<stock_code>.+)/(?P<buy_code>.+)/(?P<sell_code>.+)/(?P<start_money>.+)/', views.simulate_data, name='simulate'),
+    url(r'^s/(?P<stock_code>.+)/(?P<buy_code>.+)/(?P<sell_code>.+)/(?P<start_money>.+)/', views.simulate_data, name='simulate_data'),
     url(r'^add/', views.add_stock, name='add'),
     url(r'^simulate/(?P<code_type>.+)/$', views.simulate_type, name='simulate_type'),
 ]
