@@ -115,7 +115,6 @@
         }
 
         function get_json(code_idx){
-            debugger;
             var code = codes[code_idx].fields.yahoo;
             url = '/stock/s/' + code + '/' + buy + '/' + sell + '/' + start_money + '/';
             $.getJSON(url, function(datas){
