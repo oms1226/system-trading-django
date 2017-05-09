@@ -14,8 +14,10 @@ class BaseModel(models.Model):
 
 
 class StockCode(BaseModel):
-    yahoo_code = models.CharField(db_index=True, max_length=200)
+    type = models.CharField(db_index=True, max_length=100, default="DEFAULT")
+    yahoo = models.CharField(db_index=True, max_length=200)
     name = models.CharField(max_length=500)
+
 
 
 class StrategyBuy(BaseModel):

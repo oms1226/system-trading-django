@@ -38,14 +38,14 @@ class StockSimulator:
                 if rst:
                     sell_count = account_manager.sell(data.adj_close)
                     print('판매', self.code, data.date, data.close)
-                    self.sell_history.append({'date': data.date, 'count': sell_count})
+                    self.sell_history.append({'date': data.date, 'count': sell_count, 'code': self.code})
             # 살만한가?
             rst = self.strategy_buy.should_i_buy(data.date)
             if rst:
                 buy_count = account_manager.buy(data.adj_close)
                 if buy_count > 0:
                     print('구매', self.code, data.date, data.adj_close)
-                    self.buy_history.append({'date': data.date, 'count': buy_count})
+                    self.buy_history.append({'date': data.date, 'count': buy_count, 'code': self.code})
                     self.strategy_sell.set_close_start()
 
             self.strategy_sell.set_close(data.close)

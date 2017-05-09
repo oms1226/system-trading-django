@@ -1,0 +1,220 @@
+{% load static from staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>시뮬레이션</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+
+    <style>
+        body{
+            height: 100%;
+        }
+        #container {
+            height: 80%;
+            width: 100%;
+            position: absolute;
+        }
+        /* Paste this css to your style sheet file or under head tag */
+        /* This only works with JavaScript,
+        if it's not present, don't show loader */
+        .no-js #loader { display: none;  }
+        .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+        .se-pre-con {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: url("{% static 'stock/images/loader-64x/Preloader_2.gif' %}") center no-repeat #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="condition">
+        <div class="panel panel-info">
+            <div class="panel-heading">시뮬레이션 조건</div>
+            <div class="row">
+                <div class="col-md-2">
+                    대상:
+                    <select id="type" class="selectpicker">
+                    {% for code in codes %}
+                        <option value="{{ code.yahoo_code }}">{{ code.name }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button id="start_btn" class="btn btn-default" type="button" onclick="start()">시작</button>
+                </div>
+                <div class="col-md-2">
+                    매수전략:
+                    <select id="buy" class="selectpicker">
+                    {% for buy in buys %}
+                        <option value="{{ buy.code }}">{{ buy.name }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    매도전략:
+                    <select id="sell" class="selectpicker">
+                    {% for sell in sells %}
+                        <option value="{{ sell.code }}">{{ sell.name }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    초기금:
+                    <input type="number" id="start_money" min="0" value="{{ money }}">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="container" style="min-width: 310px; margin: 0 auto"></div>
+    <div class="se-pre-con"></div>
+
+    <script type="text/javascript">
+        var codes = {{ codes_json | safe }};
+        var code_len = codes.length;
+        var code_idx = 0;
+        var buy;
+        var sell;
+        var start_money;
+
+        $(function() {
+            // Animate loader off screen
+            $(".se-pre-con").fadeOut("slow");
+        });
+
+        function start(){
+            // 시작하면 리스트 하나씩 전송해서 결과를 받는다.
+            buy = $('#buy').val();
+            sell = $('#sell').val();
+            start_money = $('#start_money').val();
+
+            get_json(0);
+        }
+
+        function get_json(code_idx){
+            debugger;
+            var code = codes[code_idx].fields.yahoo;
+            url = '/stock/s/' + code + '/' + buy + '/' + sell + '/' + start_money + '/';
+            $.getJSON(url, function(datas){
+                draw_stock(datas);
+                code_idx += 1;
+                get_json(code_idx)
+            });
+        }
+
+        var balance = [];
+        var buy_point = [];
+        var sell_point = [];
+
+        function draw_stock(datas){
+            var balance_history = datas[0];
+            var buy_history = datas[1];
+            var sell_history = datas[2];
+
+            var ma_5 = [];
+            var ma_20 = [];
+
+            var ohlc = [];
+
+            for (var i = 0 ; i < balance_history.length; i += 1) {
+                var data = balance_history[i];
+                var date = convert_timestamp(data.date);
+
+                if (balance.length > 0){
+                    balance[i][1] = balance[i][1] + data.balance;
+                }else{
+                    balance.push([date, data.balance]);
+                }
+            }
+
+            for (var i = 0; i < buy_history.length; i += 1 ){
+                var data = buy_history[i];
+                var date = convert_timestamp(data.date);
+                buy_point.push({
+                    x: date,
+                    title: '매수:' + data.code + ":" + data.count,
+                    text: 'Shape: "circlepin"'
+                });
+            }
+
+            for (var i=0; i< sell_history.length; i += 1){
+                var data = sell_history[i];
+                var date = convert_timestamp(data.date);
+                sell_point.push({
+                    x: date,
+                    title: '매도:' + data.code + ":" + data.count,
+                    text: 'Shape: "circlepin"'
+                });
+            }
+
+            Highcharts.stockChart('container', {
+                yAxis: [{
+                    labels: {
+                        align: 'right',
+                        x: -3
+                    },
+                    title: {
+                        text: 'Balance'
+                    },
+                    offset: 0,
+                    lineWidth: 2
+                }],
+
+                series: [{
+                    id: 'balacne',
+                    name: 'balance',
+                    data: balance,
+                    yAxis: 1
+                },{
+                    type: 'flags',
+                    data: buy_point,
+                    onSeries: 'ohlc',
+                    shape: 'squarepin',
+                    width: 16
+                },{
+                    type: 'flags',
+                    data: sell_point,
+                    onSeries: 'ohlc',
+                    shape: 'squarepin',
+                    width: 16
+                },
+                ]
+            });
+        }
+
+        function convert_timestamp(date){
+            return new Date(date).getTime();
+        }
+        $('.selectpicker').selectpicker({
+            style: 'btn-default',
+            size: 20,
+            width: 'auto'
+
+        });
+
+    </script>
+</body>
+</html>

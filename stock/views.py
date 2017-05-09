@@ -10,7 +10,7 @@ from .strategy.SellDC_5 import SellDC_5
 from .strategy.SellMAX_10 import SellMAX_10
 from .manager.StockSimulator import StockSimulator
 from .models import StockCode, StrategyBuy, StrategySell
-
+from django.core.serializers import serialize
 
 def index(request):
     # 대상들
@@ -35,10 +35,10 @@ def add_stock(request):
     lines = f.readlines()
     for line in lines:
         datas = line.split(',')
-        yahoo_code = datas[0]
+        yahoo = datas[0]
         name = datas[1]
         obj, created = StockCode.objects.get_or_create(
-            yahoo_code=yahoo_code, name=name
+            yahoo=yahoo, name=name
         )
     f.close()
 
@@ -68,7 +68,7 @@ def collect(request):
     return render(request, 'stock/collect.html', {'msg': '데이터 저장 완료'})
 
 
-def simulate(request, stock_code, buy_code, sell_code, start_money):
+def simulate_data(request, stock_code, buy_code, sell_code, start_money):
     # 최근 데이터를 조회한다
     print('최근 데이터 저장 시작', stock_code)
     rst = StockManager.save_recent_data(stock_code)
@@ -95,3 +95,23 @@ def simulate(request, stock_code, buy_code, sell_code, start_money):
     sell_history = simulator.get_sell_history()
 
     return HttpResponse(json.dumps([balance_history, buy_history, sell_history]), content_type='text/json')
+
+
+def simulate_type(request, code_type="DEFAULT"):
+    # 대상들
+    if code_type:
+        codes = StockCode.objects.filter(type=code_type)
+        codes_json = serialize('json', codes)
+    # 매수전략
+    buys = StrategyBuy.objects.filter(use_yn='Y')
+    # 매도전략
+    sells = StrategySell.objects.filter(use_yn='Y')
+    # 초기금
+    money = 1000000
+    return render(request, 'stock/simulate_type.html'
+                  , {'codes': codes, 'codes_json': codes_json
+                      , 'buys': buys, 'sells': sells
+                      , 'money': money
+                     })
+
+
