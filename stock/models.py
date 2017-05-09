@@ -1,30 +1,33 @@
 from django.db import models
 from django.utils.timezone import now
 
+
 # Create your models here.
+class BaseModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    use_yn = models.CharField(max_length=1, default='Y')
+
+    class Meta:
+        abstract = True
 
 
-class StockCode(models.Model):
+class StockCode(BaseModel):
     yahoo_code = models.CharField(db_index=True, max_length=200)
     name = models.CharField(max_length=500)
-    reg_date = models.DateTimeField(auto_now_add=True)
 
 
-class StrategyBuy(models.Model):
+class StrategyBuy(BaseModel):
     code = models.CharField(db_index=True, max_length=200)
     name = models.CharField(max_length=500)
-    use_yn = models.CharField(max_length=1, default='Y')
-    reg_date = models.DateTimeField(auto_now_add=True)
 
 
-class StrategySell(models.Model):
+class StrategySell(BaseModel):
     code = models.CharField(db_index=True, max_length=200)
     name = models.CharField(max_length=500)
-    use_yn = models.CharField(max_length=1, default='Y')
-    reg_date = models.DateTimeField(auto_now_add=True)
 
 
-class StockData(models.Model):
+class StockData(BaseModel):
     code = models.CharField(db_index=True, max_length=200)
     date = models.CharField(db_index=True, max_length=10)
     open = models.FloatField(null=True)
@@ -41,12 +44,8 @@ class StockData(models.Model):
     mv_60 = models.FloatField(null=True)
     ra_5 = models.FloatField(null=True)
     ra_20 = models.FloatField(null=True)
-    reg_date = models.DateTimeField(default=now)
 
     class Meta:
         unique_together = ('code', 'date')
-
-    def __str__(self):
-        return self.code
 
 

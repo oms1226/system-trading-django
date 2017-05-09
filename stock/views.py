@@ -3,12 +3,12 @@ import os
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
-from .stock import StockManager
+from .manager import StockManager
 from .strategy.BuyRA_5 import BuyRA_5
 from .strategy.BuyGC_5 import BuyGC_5
 from .strategy.SellDC_5 import SellDC_5
 from .strategy.SellMAX_10 import SellMAX_10
-from .stock.StockSimulator import StockSimulator
+from .manager.StockSimulator import StockSimulator
 from .models import StockCode, StrategyBuy, StrategySell
 
 
@@ -30,7 +30,7 @@ def index(request):
 def add_stock(request):
     # name, yahoo_code,
     # 파일읽기
-    file = os.path.join(settings.SITE_ROOT, '../stock/data/kospi_yahoo.csv')
+    file = os.path.join(settings.SITE_ROOT, '../manager/data/kospi_yahoo.csv')
     f = open(file, 'rt')
     lines = f.readlines()
     for line in lines:
@@ -70,7 +70,7 @@ def collect(request):
 
 # def view(request, strategy, code):
 #     """시물레이션을 보여준다."""
-#     # return render(request, 'stock/view.html', {'strategy': strategy, 'code': code})
+#     # return render(request, 'manager/view.html', {'strategy': strategy, 'code': code})
 #     # 대상들
 #     codes = StockCode.objects.all()
 #     # 매수전략
@@ -78,7 +78,7 @@ def collect(request):
 #     # 매도전략
 #     sells = StrategySell.objects.filter(use_yn='Y')
 #     # 초기금
-#     return render(request, 'stock/simulate.html', {'codes': codes
+#     return render(request, 'manager/simulate.html', {'codes': codes
 #         , 'buys': buys
 #         , 'sells': sells})
 

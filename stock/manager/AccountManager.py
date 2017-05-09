@@ -62,7 +62,7 @@ class AccountManager:
     def get_balance_with_stock(self, close):
         sum_of_stock_price = 0
         for stock in self.holding_stocks:
-            # sum_of_stock_price += stock.get_price() * stock.get_count() * self.sell_rate
+            # sum_of_stock_price += manager.get_price() * manager.get_count() * self.sell_rate
             sum_of_stock_price += close * stock.get_count() * self.sell_rate
         return self.balance + sum_of_stock_price
 
