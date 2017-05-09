@@ -139,7 +139,6 @@
 
             var ohlc = [];
 
-            debugger;
             for (var i = 0 ; i < balance_history.length; i += 1) {
                 var data = balance_history[i];
                 var date = convert_timestamp(data.date);
@@ -188,19 +187,20 @@
                     id: 'balacne',
                     name: 'balance',
                     data: balance
-                },{
-                    type: 'flags',
-                    data: buy_point,
-                    onSeries: 'balacne',
-                    shape: 'squarepin',
-                    width: 16
-                },{
-                    type: 'flags',
-                    data: sell_point,
-                    onSeries: 'balacne',
-                    shape: 'squarepin',
-                    width: 16
-                },
+                }
+{#                ,{#}
+{#                    type: 'flags',#}
+{#                    data: buy_point,#}
+{#                    onSeries: 'balacne',#}
+{#                    shape: 'squarepin',#}
+{#                    width: 16#}
+{#                },{#}
+{#                    type: 'flags',#}
+{#                    data: sell_point,#}
+{#                    onSeries: 'balacne',#}
+{#                    shape: 'squarepin',#}
+{#                    width: 16#}
+{#                }#}
                 ]
             });
         }
