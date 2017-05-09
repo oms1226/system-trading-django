@@ -55,18 +55,19 @@
             <div class="row">
                 <div class="col-md-2">
                     대상:
-                    <select id="code" class="selectpicker">
+                    <select id="code" class="selectpicker" onchange="change_code(this.value)">
                     {% for code in codes %}
                         <option value="{{ code.yahoo }}">{{ code.name }}</option>
                     {% endfor %}
                     </select>
+                    <input type="text" id="stock_code" name="stock_code"  value="">
                 </div>
                 <div class="col-md-1">
                     <button id="start_btn" class="btn btn-default" type="button" onclick="start()">시작</button>
                 </div>
                 <div class="col-md-2">
                     매수전략:
-                    <select id="buy" class="selectpicker">
+                    <select id="buy" name="buy" class="selectpicker">
                     {% for buy in buys %}
                         <option value="{{ buy.code }}">{{ buy.name }}</option>
                     {% endfor %}
@@ -74,7 +75,7 @@
                 </div>
                 <div class="col-md-2">
                     매도전략:
-                    <select id="sell" class="selectpicker">
+                    <select id="sell" name="sell" class="selectpicker">
                     {% for sell in sells %}
                         <option value="{{ sell.code }}">{{ sell.name }}</option>
                     {% endfor %}
@@ -82,7 +83,7 @@
                 </div>
                 <div class="col-md-2">
                     초기금:
-                    <input type="number" id="start_money" min="0" value="{{ money }}">
+                    <input type="number" id="start_money" name="start_money" min="0" value="{{ money }}">
                 </div>
 
             </div>
@@ -93,6 +94,9 @@
     <div class="se-pre-con"></div>
 
     <script type="text/javascript">
+        function change_code(value){
+            $('#stock_code').val(value);
+        }
 
         $(function() {
             // Animate loader off screen
@@ -102,7 +106,7 @@
         function start(){
             $(".se-pre-con").fadeIn("slow");
 
-            code = $('#code').val();
+            code = $('#stock_code').val();
             buy = $('#buy').val();
             sell = $('#sell').val();
             start_money = $('#start_money').val();

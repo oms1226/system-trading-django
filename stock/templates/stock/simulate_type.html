@@ -111,7 +111,9 @@
             sell = $('#sell').val();
             start_money = $('#start_money').val();
 
-            get_json(0);
+            code_idx = 0;
+            balance = [];
+            get_json(code_idx);
         }
 
         function get_json(code_idx){
@@ -143,7 +145,7 @@
                 var date = convert_timestamp(data.date);
 
                 if (balance.length > i){
-                    balance[i][1] = balance[i][1] + data.balance;
+                    balance[i][1] += data.balance;
                 }else{
                     balance.push([date, data.balance]);
                 }
