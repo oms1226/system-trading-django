@@ -156,18 +156,21 @@ def collect_backgound():
     channel = '#bot_torrent'
 
     # 이름, 함수
-    torrents = {
+    torrents = [
         # '토렌트위즈': collect_torrentwiz,
-        '티프리카': collect_tfreeca,
-        '토렌트킴': collect_torrentkim,
-    }
+        ['티프리카', collect_tfreeca],
+        ['토렌트킴', collect_torrentkim],
+    ]
 
-    for name, func in torrents.items():
+    for torrent in torrents:
+        name = torrent[0]
+        func = torrent[1]
+
         rst = ''
 
         try:
             result = func()
-        except:
+        except Exception as e:
             print(sys.exc_info()[0])
             settings.SLACK.chat.post_message(channel, name + ' 실패', sys.exc_info()[0])
         else:
