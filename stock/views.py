@@ -4,21 +4,23 @@ from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
 from .manager import StockManager
+from .manager.StockSimulator import StockSimulator
+from .models import StockCode, StrategyBuy, StrategySell
+from django.core.serializers import serialize
 from .strategy.BuyRA_5 import BuyRA_5
 from .strategy.BuyGC_5 import BuyGC_5
 from .strategy.SellDC_5 import SellDC_5
 from .strategy.SellMAX_10 import SellMAX_10
-from .manager.StockSimulator import StockSimulator
-from .models import StockCode, StrategyBuy, StrategySell
-from django.core.serializers import serialize
+from .strategy.BuySupportLevel_3M import BuySupportLevel_3M
+
 
 def index(request):
     # 대상들
     codes = StockCode.objects.all()
     # 매수전략
-    buys = StrategyBuy.objects.filter(use_yn='Y')
+    buys = StrategyBuy.objects.filter(use_yn='Y').order_by('-id')
     # 매도전략
-    sells = StrategySell.objects.filter(use_yn='Y')
+    sells = StrategySell.objects.filter(use_yn='Y').order_by('-id')
     # 초기금
     money = 1000000
     return render(request, 'stock/simulate.html'
@@ -80,6 +82,8 @@ def simulate_data(request, stock_code, buy_code, sell_code, start_money):
         buy_func = BuyRA_5()
     elif buy_code == 'GC_5':
         buy_func = BuyGC_5()
+    elif buy_code == 'SUPPORT_LEVEL_3M':
+        buy_func = BuySupportLevel_3M()
 
     if sell_code == 'MAX_10':
         sell_func = SellMAX_10()

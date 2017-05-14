@@ -12,3 +12,4 @@ pyrebase
 pandas
 pandas_datareader
 slacker
+django-celery
