@@ -114,6 +114,9 @@
             $.getJSON(url, function(datas){
                 $(".se-pre-con").fadeOut("slow");
                 draw_stock(datas);
+            }).error(function() {
+                $(".se-pre-con").fadeOut("slow");
+                alert("error");
             });
         }
         function draw_stock(datas){
