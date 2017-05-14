@@ -2,6 +2,12 @@
 # System Trading django
 
 
+## 발표자료
+
+- [django_simulate](https://rawgit.com/jacegem/system-trading-django/master/remark/django_simulate.html)
+- [python_simulate](https://rawgit.com/jacegem/system-trading-django/master/remark/python_simulate.html)
+
+
 ## 야후, 구글 구분
 
 야후

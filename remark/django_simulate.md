@@ -28,21 +28,113 @@ Press ? to toggle keyboard commands help.
 
 ---
 
-# 차례
+# 내용
 
-1. 전략을 세웁니다.
+## 실패했던 전략
 
-2. PyQt 를 이용해서 GUI로 구성합니다.
+- 전날보다 오르면 `구매`
+- 전날보다 내리면 `판매`
 
-3. 데이터를 조회합니다. (야후 파이넨스)
+## 새로운 전략
 
-4. 시뮬레이션을 합니다.
+지지선을 사용한 전략을 세웁니다.
 
-5. 앞으로 할 일
+- 참고 : http://stock79.tistory.com/164
 
 ---
 
-# 전략
+# 저항선 / 지지선
+
+![](https://content.screencast.com/users/beneapp/folders/Snagit/media/ef7131e0-1848-481a-8d61-b03356b142fa/2017-05-14_20-20-23.png)
+
+---
+
+# 차례
+
+1. django 구축
+
+1. MySQL 데이터 베이스를 조회합니다.
+
+2. 최근 데이터가 없으면 야후 금융으로 부터 데이터를 조회합니다.
+
+3. 시뮬레이션을 합니다.
+
+4. 결과를 차트로 표현합니다.
+
+---
+
+# django 흐름
+
+```python
+# urls.py
+from . import views
+from .v1 import views as v1
+
+urlpatterns = [
+    url(r'^$', views.index, name='index'),
+    url(r'^v1/simulate/data/$', v1.simulate_data, name='v1_simulate_data'),
+]
+```
+
+
+초기 페이지 `index` 와 시물레이션을 위한 `simulate_data` 함수를 생성하였습니다.
+
+---
+
+# model
+
+```python
+from django.db import models
+
+class BaseModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    use_yn = models.CharField(max_length=1, default='Y')
+    desc = models.TextField(blank=True)
+
+    class Meta:
+        abstract = True
+
+class StockCode(BaseModel):
+    type = models.CharField(db_index=True, max_length=100, default="DEFAULT")
+    yahoo = models.CharField(db_index=True, max_length=200)
+    name = models.CharField(max_length=500)
+
+class StrategyBuy(BaseModel):
+    code = models.CharField(db_index=True, max_length=200)
+    name = models.CharField(max_length=500)
+
+class StrategySell(BaseModel):
+    code = models.CharField(db_index=True, max_length=200)
+    name = models.CharField(max_length=500)
+```
+
+---
+
+# index
+
+```python
+def index(request):
+    # 대상들
+    codes = StockCode.objects.all()
+    # 매수전략
+    buys = StrategyBuy.objects.filter(use_yn='Y').order_by('-id')
+    # 매도전략
+    sells = StrategySell.objects.filter(use_yn='Y').order_by('-id')
+    # 초기금
+    money = 1000000
+    return render(request, 'stock/simulate.html'
+                  , {'codes': codes, 'buys': buys, 'sells': sells
+                      , 'money': money, 'version': 'v1'
+                     })
+```
+
+---
+
+# simulate.html
+
+
+
 
 단순하게 해 보았습니다.
 

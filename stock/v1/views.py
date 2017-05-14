@@ -12,9 +12,8 @@ from ..strategy.BuyGC_5 import BuyGC_5
 from ..strategy.SellDC_5 import SellDC_5
 from ..strategy.SellMAX_10 import SellMAX_10
 from ..strategy.BuySupportLevel_3M import BuySupportLevel_3M
-
-
-
+from ..strategy.BuyMomentum import BuyMomentum
+from ..strategy.SellMomentum import SellMomentum
 
 
 def add_stock(request):
@@ -76,11 +75,16 @@ def simulate_data(request):
         buy_func = BuyGC_5()
     elif buy_code == 'SUPPORT_LEVEL_3M':
         buy_func = BuySupportLevel_3M()
+    elif buy_code == 'MOMENTUM':
+        buy_func = BuyMomentum()
 
     if sell_code == 'MAX_10':
         sell_func = SellMAX_10()
     elif sell_code == 'DC_5':
         sell_func = SellDC_5()
+    elif buy_code == 'MOMENTUM':
+        sell_func = SellMomentum()
+
 
     print('시뮬레이션 시작', stock_code, buy_code, sell_code, start_money)
     simulator = StockSimulator(stock_code, buy_func, sell_func, start_money)
