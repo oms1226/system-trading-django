@@ -4,6 +4,10 @@
 
 ## 발표자료
 
+- [Momentum](https://rawgit.com/jacegem/system-trading-django/master/remark/momentum.html)
+
+미완성
+
 - [django_simulate](https://rawgit.com/jacegem/system-trading-django/master/remark/django_simulate.html)
 - [python_simulate](https://rawgit.com/jacegem/system-trading-django/master/remark/python_simulate.html)
 
