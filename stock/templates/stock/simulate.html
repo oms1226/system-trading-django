@@ -94,6 +94,8 @@
     <div class="se-pre-con"></div>
 
     <script type="text/javascript">
+        var version = "{{ version }}";
+
         function change_code(value){
             $('#stock_code').val(value);
         }
@@ -110,8 +112,8 @@
             buy = $('#buy').val();
             sell = $('#sell').val();
             start_money = $('#start_money').val();
-            url = '/stock/s/' + code + '/' + buy + '/' + sell + '/' + start_money + '/';
-            $.getJSON(url, function(datas){
+            url = '/stock/' + version + '/simulate/data/';
+            $.getJSON(url, {'code': code, 'buy': buy, 'sell': sell, 'start_money': start_money}, function(datas){
                 $(".se-pre-con").fadeOut("slow");
                 draw_stock(datas);
             }).error(function() {

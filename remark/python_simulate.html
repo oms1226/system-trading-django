@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="dark-blue-theme">
+<head>
+    <title>TITLE - Underscore.io</title>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="remark.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<textarea id="source">
+
+
+</textarea>
+<!--
+  There's a copy of this JS included in the cached folder,
+  to give yourself a chance if you have no internets /o\
+-->
+<script src="https://gnab.github.io/remark/downloads/remark-latest.min.js"></script>
+<script>
+    var slideshow = remark.create({
+        //ratio: '4:3',
+        ratio: '16:9',
+        sourceUrl: 'python_simulate.md',
+
+
+        slideNumberFormat: '%current%',
+        // Or you might like the page number bottom right:
+        // slideNumberFormat: '%current%',
+
+        // Default: use ```sql ..``` etc to override
+        highlightLanguage: 'python',
+
+        // Plausible style for blue background:
+        highlightStyle: 'monokai',
+
+        // These also look reasonable:
+        //highlightStyle: 'default',
+        //highlightStyle: 'ascetic',
+        //highlightStyle: 'vs',
+
+        //Good styles, but don't really work with a blue background:
+        //highlightStyle: 'ir_black',
+        //highlightStyle: 'dark',
+
+    });
+</script>
+</body>
+</html>
