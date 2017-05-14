@@ -45,8 +45,7 @@ n일 모멘텀 = 현재 주가 - n일 전 주가
 
 # 테스트
 
-<http://attr.cf/stock>
-
+http://attr.cf/stock
 
 
 ---
